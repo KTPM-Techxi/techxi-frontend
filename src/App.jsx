@@ -1,7 +1,19 @@
+import { HashRouter as Router, Route, Routes } from "react-router-dom"
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import ErrorPage from "./pages/ErrorPage";
+import Root from "./routes/RootPage";
 function App() {
-	return <div className="h-full">
-		<h1 className='max-w-full w-max mx-auto bg-blue-500 rounded-3xl p-4 text-3xl my-auto'>Hello babe</h1>
-	</div>
+	return (
+		<Routes>
+			<Route path="/" element={<Root/>} />
+			<Route path="/login" element={<LoginPage />} />
+			<Route path="/register" element={<RegisterPage />} />
+			{/* Handle Error page */}
+			<Route path="*" element={<ErrorPage />} />
+		</Routes>
+	)
+
 }
 
 export default App;
