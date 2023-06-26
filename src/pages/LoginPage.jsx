@@ -1,6 +1,17 @@
 import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 
 const LoginPage = () => {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm();
+
+    const onSubmit = (data) => {
+        console.log(data);
+    };
+
     return (
         <div>
             <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -16,7 +27,9 @@ const LoginPage = () => {
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form className="space-y-6">
+                    <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        className="space-y-6">
                         <div>
                             <label
                                 htmlFor="email"
@@ -26,12 +39,16 @@ const LoginPage = () => {
                             <div className="mt-2">
                                 <input
                                     id="email"
-                                    name="email"
+                                    {...register('email', { required: true })}
                                     type="email"
                                     autoComplete="email"
-                                    required
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-inset focus:ring-[#00B14F] sm:text-sm sm:leading-6 p-2"
                                 />
+                                {errors.email && (
+                                    <span className="text-red-500 text-sm">
+                                        Please enter your email address.
+                                    </span>
+                                )}
                             </div>
                         </div>
 
@@ -53,12 +70,17 @@ const LoginPage = () => {
                             <div className="mt-2">
                                 <input
                                     id="password"
+                                    {...register('password', { required: true })}
                                     name="password"
                                     type="password"
                                     autoComplete="current-password"
-                                    required
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#00B14F] sm:text-sm sm:leading-6 outline-none p-2"
                                 />
+                                {errors.password && (
+                                    <span className="text-red-500 text-sm">
+                                        Please enter your password.
+                                    </span>
+                                )}
                             </div>
                         </div>
 
@@ -72,7 +94,7 @@ const LoginPage = () => {
                     </form>
 
                     <p className="mt-10 text-center text-sm text-gray-500">
-                        Not a member yet ?{' '}
+                        Not a member yet ?
                         <Link
                             to="/register"
                             className="font-semibold leading-6 text-[#00B14F] hover:text-[#00B14F]">
