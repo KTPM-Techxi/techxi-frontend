@@ -1,4 +1,4 @@
-# techxi-frontend
+# Techxi-frontend : Grab Clone
 ## This project is a school project that built on top with: ReactJS + NodeJS + MongoDB
 ## Dependency: 
 - State management: Redux, Redux Toolkit
