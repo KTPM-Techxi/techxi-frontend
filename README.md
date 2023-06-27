@@ -18,4 +18,4 @@ Team size: 4
 - Nguyễn Đức An
 - Huỳnh Quốc Bảo
 - Khang Nhật 
-University of Science - VNUHCM aka Trường Đại học Khoa học Tự nhiên - Đại học Quốc gia TP.HCM aka nơi dí deadline tới chết
+##University of Science - VNUHCM aka Trường Đại học Khoa học Tự nhiên - Đại học Quốc gia TP.HCM aka nơi dí deadline tới chết
