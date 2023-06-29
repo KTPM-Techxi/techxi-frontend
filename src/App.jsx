@@ -5,11 +5,12 @@ import ErrorPage from "./pages/ErrorPage";
 import Root from "./routes/RootPage";
 import RequestsPage from "./pages/RequestsPage";
 import Layout from "./layout/layout";
+import { HomePage } from "./pages/HomePage";
 function App() {
 	return (
 		<Layout>
 		<Routes>
-			<Route path="/" element={<Root/>} />
+			<Route path="/" element={<HomePage/>} />
 			<Route path="/login" element={<LoginPage />} />
 			<Route path="/register" element={<RegisterPage />} />
 			<Route path="/request" element={<RequestsPage />} />
