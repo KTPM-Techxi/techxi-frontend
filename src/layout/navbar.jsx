@@ -13,7 +13,7 @@ function NavList() {
       <ul className="justify-between my-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
         <div className="flex item-left col-span-3 lg:col-span-1">
             <img
-                            className="mr-2 h-10 w-auto"
+                            className="mr-2 mt-1 h-8 w-auto"
                             src="https://companieslogo.com/img/orig/GRAB-e42c2148.png?t=1643541585"
                             alt="Your Company"
                         />
@@ -89,13 +89,14 @@ export default function NavigationBar() {
   }, []);
  
   return (
-    <Navbar className="mt-3 mb-3 mx-auto max-w-screen-xl px-6 py-3 rounded-full">
-      <div className=" items-center justify-between text-blue-gray-900">
-        
-        <div className="hidden lg:block ">
+    <div className="sticky top-0 z-50 py-3 bg-[#00B14F]">
+    <Navbar className="mx-auto max-w-screen-xl px-3 py-2 rounded-full bg-white">
+      <div className="items-center justify-between text-blue-gray-900">
+        <div className="hidden lg:block">
           <NavList />
         </div>
       </div>
     </Navbar>
+  </div>
   );
 }
