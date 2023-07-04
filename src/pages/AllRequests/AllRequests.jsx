@@ -1,7 +1,11 @@
 import { Radio, Space, Table, Tag, Collapse, theme } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import InputUserInforForm from '../../components/CallCenter/InputUserInforForm';
+import { faker } from '@faker-js/faker';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import CustomModal from '../../components/CustomModal';
 
 const columns = [
   {
@@ -57,44 +61,7 @@ const columns = [
     )
   }
 ];
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    phoneNumber: '0903331412',
-    curAddress: 'New York No. 1 Lake Park',
-    desAddress: 'London No. 1 Lake Park',
-    tags: ['driver assigned'],
-    pickUpTime: formatDate(new Date())
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    phoneNumber: '0903331412',
-    curAddress: 'London No. 1 Lake Park',
-    desAddress: 'New York No. 1 Lake Park',
-    tags: ['driver assigned'],
-    pickUpTime: formatDate(new Date())
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    phoneNumber: '0903331412',
-    curAddress: 'Sydney No. 1 Lake Park',
-    desAddress: 'New York No. 1 Lake Park',
-    tags: ['driver arrived'],
-    pickUpTime: formatDate(new Date())
-  },
-  {
-    key: '4',
-    name: 'Joe Black 4',
-    phoneNumber: '0903331412',
-    curAddress: 'Sydney No. 1 Lake Park',
-    desAddress: 'New York No. 1 Lake Park',
-    tags: ['driver picked up'],
-    pickUpTime: formatDate(new Date())
-  }
-];
+
 // Helper functions
 function formatDate(date) {
   const day = date.getDate();
@@ -134,23 +101,82 @@ function getTagColor(tag) {
   }
 }
 // End of helper functions
+let data = [
+  {
+    key: '1',
+    name: 'John Brown',
+    phoneNumber: '0903331412',
+    curAddress: 'New York No. 1 Lake Park',
+    desAddress: 'London No. 1 Lake Park',
+    tags: ['driver assigned'],
+    pickUpTime: formatDate(new Date())
+  },
+  {
+    key: '2',
+    name: 'Jim Green',
+    phoneNumber: '0903331412',
+    curAddress: 'London No. 1 Lake Park',
+    desAddress: 'New York No. 1 Lake Park',
+    tags: ['driver assigned'],
+    pickUpTime: formatDate(new Date())
+  },
+  {
+    key: '3',
+    name: 'Joe Black',
+    phoneNumber: '0903331412',
+    curAddress: 'Sydney No. 1 Lake Park',
+    desAddress: 'New York No. 1 Lake Park',
+    tags: ['driver arrived'],
+    pickUpTime: formatDate(new Date())
+  },
+  {
+    key: '4',
+    name: 'Joe Black 4',
+    phoneNumber: '0903331412',
+    curAddress: 'Sydney No. 1 Lake Park',
+    desAddress: 'New York No. 1 Lake Park',
+    tags: ['driver picked up'],
+    pickUpTime: formatDate(new Date())
+  }
+];
 const AllRequests = () => {
   const [isAddNew, setIsAddNew] = useState(false);
-  const handleAddNew = () => {
-    setIsAddNew(!isAddNew);
-  };
+
+  // Generate fake data when component mounted
+  useEffect(() => {
+    for (let i = 5; i < 20; i++) {
+      data.push({
+        key: `${i + 1}`,
+        name: faker.internet.displayName(),
+        phoneNumber: faker.phone.number(),
+        curAddress: faker.location.streetAddress(),
+        desAddress: faker.location.streetAddress(),
+        tags: ['driver assigned'],
+        pickUpTime: formatDate(new Date())
+      });
+    }
+    setDataList(data);
+  }, []);
+  // End of generate fake data
+
+  // create new variable to store data => set to dataSource below
+  const [dataList, setDataList] = useState(data);
+
   return (
     <div className="relative">
-      <button className="outline-none border py-2 px-4 text-2xl rounded-md hover:opacity-70 active:scale-[.95]" onClick={handleAddNew}>
-        + Add new request
-      </button>
-      <div className="p-4 absolute left-[50%] top-[50%]">{isAddNew && <InputUserInforForm />}</div>
       <Table
         columns={columns}
         pagination={{
-          position: 'Bottom Right'
+          position: ['topLeft'],
+          pageSize: 15
         }}
-        dataSource={data}></Table>
+        dataSource={dataList}
+      />
+      <div className="fixed right-0 top-24 px-4 py-2 bg-[rgba(20,241,57,0.4)] rounded-2xl cursor-pointer hover:scale-105 transition-all z-10">
+        <CustomModal title={'Add New Request'} content={<InputUserInforForm />} buttons={'Ok'}>
+          <FontAwesomeIcon icon={faPlus} className="mr-2" />
+        </CustomModal>
+      </div>
     </div>
   );
 };

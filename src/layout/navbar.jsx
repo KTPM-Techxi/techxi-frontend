@@ -14,10 +14,10 @@ function NavList() {
         </Link>
       </div>
       <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
-        <a href="#" className="flex items-center hover:text-[#00B14F] text-black">
+        <Link to={'/requests'} className="flex items-center hover:text-[#00B14F] text-black">
           <FontAwesomeIcon icon={faList} className="mr-1" />
           Request List
-        </a>
+        </Link>
       </Typography>
       <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
         <a href="#" className="flex items-center hover:text-[#00B14F] text-black">
@@ -31,12 +31,12 @@ function NavList() {
           Ratings
         </a>
       </Typography>
-      <Link to={'/login'} as="li" variant="small" color="blue-gray" className="p-1 font-medium">
-        <a href="#" className="flex items-center hover:text-[#00B14F] text-black">
+      <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
+        <Link to={'/login'} className="flex items-center hover:text-[#00B14F] text-black">
           <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
           Log out
-        </a>
-      </Link>
+        </Link>
+      </Typography>
     </ul>
   );
 }
