@@ -142,7 +142,7 @@ const AllRequests = () => {
   return (
     <div className="relative">
       <button className="outline-none border py-2 px-4 text-2xl rounded-md hover:opacity-70 active:scale-[.95]" onClick={handleAddNew}>
-        + Add new
+        + Add new request
       </button>
       <div className="p-4 absolute left-[50%] top-[50%]">{isAddNew && <InputUserInforForm />}</div>
       <Table
