@@ -6,6 +6,8 @@ import Root from "./routes/RootPage";
 import RequestsPage from "./pages/RequestsPage";
 import Layout from "./layout/layout";
 import { HomePage } from "./pages/HomePage";
+import AllRequests from "./pages/AllRequests/AllRequests";
+import DateTimePicker from "./pages/TestPage";
 function App() {
 	return (
 		<Layout>
@@ -13,9 +15,12 @@ function App() {
 			<Route path="/" element={<HomePage/>} />
 			<Route path="/login" element={<LoginPage />} />
 			<Route path="/register" element={<RegisterPage />} />
+			<Route path="/requests" element={<AllRequests />} />
 			<Route path="/request" element={<RequestsPage />} />
 			{/* Handle Error page */}
 			<Route path="*" element={<ErrorPage />} />
+			{/* Test page to test component */}
+			<Route path="/test" element={<DateTimePicker />} />
 		</Routes>
 		</Layout>
 	)
