@@ -20,10 +20,10 @@ function NavList() {
         </Link>
       </Typography>
       <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
-        <a href="#" className="flex items-center hover:text-[#00B14F] text-black">
+        <Link to={'/userlist'} href="#" className="flex items-center hover:text-[#00B14F] text-black">
           <FontAwesomeIcon icon={faUser} className="mr-1" />
           Users Management
-        </a>
+        </Link>
       </Typography>
       <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
         <a href="#" className="flex items-center hover:text-[#00B14F] text-black">

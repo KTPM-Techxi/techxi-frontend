@@ -8,7 +8,7 @@ const RegisterPage = () => {
     watch,
     formState: { errors }
   } = useForm();
-  const onSubmit = (data) => console.log(data);
+
   async function handleRegister(data) {
     console.log(data);
     try {

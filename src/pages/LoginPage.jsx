@@ -17,15 +17,11 @@ const LoginPage = () => {
     formState: { errors }
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
-  };
   async function handleLogin(data) {
     console.log(data);
     try {
       const response = await axios.post('/users/login', data);
       console.log(response);
-      const { user } = response.data;
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
         console.log(error.response.data.message);
