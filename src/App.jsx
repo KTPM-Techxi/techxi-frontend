@@ -10,6 +10,7 @@ import AllRequests from "./pages/AllRequests/AllRequests";
 import DateTimePicker from "./pages/TestPage";
 
 import axios from 'axios'
+import { UserList } from "./pages/UserList";
 axios.defaults.baseURL = 'http://localhost:8080'
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
 			<Route path="/register" element={<RegisterPage />} />
 			<Route path="/requests" element={<AllRequests />} />
 			<Route path="/request" element={<RequestsPage />} />
+			<Route path="/userlist" element={<UserList />} />
 			{/* Handle Error page */}
 			<Route path="*" element={<ErrorPage />} />
 			{/* Test page to test component */}
