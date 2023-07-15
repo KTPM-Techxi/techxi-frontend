@@ -1,7 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import axios from 'axios';
 
 const LoginPage = () => {
   const userRef = useRef();
@@ -19,6 +20,20 @@ const LoginPage = () => {
   const onSubmit = (data) => {
     console.log(data);
   };
+  async function handleLogin(data) {
+    console.log(data);
+    try {
+      const response = await axios.post('/users/login', data);
+      console.log(response);
+      const { user } = response.data;
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        console.log(error.response.data.message);
+      } else {
+        console.log('Login failed');
+      }
+    }
+  }
 
   return (
     <div>
@@ -29,7 +44,7 @@ const LoginPage = () => {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(handleLogin)} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Email address
@@ -65,7 +80,7 @@ const LoginPage = () => {
           </form>
 
           <p className="mt-10 text-center text-sm text-gray-500">
-            Not a member yet ?
+            Not a member yet ?{' '}
             <Link to="/register" className="font-semibold leading-6 text-[#00B14F] hover:text-[#00B14F]">
               Start your drive now !
             </Link>

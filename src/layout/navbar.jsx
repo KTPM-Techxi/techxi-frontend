@@ -34,7 +34,7 @@ function NavList() {
       <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
         <Link to={'/login'} className="flex items-center hover:text-[#00B14F] text-black">
           <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
-          Log out
+          Log in
         </Link>
       </Typography>
     </ul>

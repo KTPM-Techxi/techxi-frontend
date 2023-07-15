@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
 const RegisterPage = () => {
   const {
     register,
@@ -8,27 +9,32 @@ const RegisterPage = () => {
     formState: { errors }
   } = useForm();
   const onSubmit = (data) => console.log(data);
+  async function handleRegister(data) {
+    console.log(data);
+    try {
+      const response = await axios.post('/users/register', data);
+      console.log(response);
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        console.log(error.response.data.message);
+      } else {
+        console.log('Register failed');
+      }
+    }
+  }
   return (
     <div>
       <div>
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-            <img
-              className="mx-auto h-10 w-auto"
-              src="https://companieslogo.com/img/orig/GRAB-e42c2148.png?t=1643541585"
-              alt="Your Company"
-            />
+            <img className="mx-auto h-10 w-auto" src="https://companieslogo.com/img/orig/GRAB-e42c2148.png?t=1643541585" alt="Your Company" />
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Let&apos;s create your new account !</h2>
           </div>
 
           <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="space-y-6">
+            <form onSubmit={handleSubmit(handleRegister)} className="space-y-6">
               <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
                   Your name
                 </label>
                 <div className="mt-2">
@@ -47,9 +53,7 @@ const RegisterPage = () => {
                 </div>
               </div>
               <div>
-                <label
-                  htmlFor="phoneNumber"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="phoneNumber" className="block text-sm font-medium leading-6 text-gray-900">
                   Your phone number
                 </label>
                 <div className="mt-2">
@@ -66,51 +70,32 @@ const RegisterPage = () => {
                 </div>
               </div>
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                   Email address
                 </label>
                 <div className="mt-2">
-                  <input
-                    id="email"
-                    type="email"
-                    autoComplete="email"
-                    {...register('email', { required: true })}
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-inset focus:ring-[#00B14F] sm:text-sm sm:leading-6 p-2"
-                  />
+                  <input id="email" type="email" autoComplete="email" {...register('email', { required: true })} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-inset focus:ring-[#00B14F] sm:text-sm sm:leading-6 p-2" />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-medium leading-6 text-gray-900">
+                  <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                     Password
                   </label>
                   <div className="text-sm">
-                    <a
-                      href="#"
-                      className="font-semibold text-[#00B14F] hover:text-[#00B14F]">
+                    <a href="#" className="font-semibold text-[#00B14F] hover:text-[#00B14F]">
                       Forgot password?
                     </a>
                   </div>
                 </div>
                 <div className="mt-2">
-                  <input
-                    id="password"
-                    type="password"
-                    {...register('password', { required: true })}
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#00B14F] sm:text-sm sm:leading-6 outline-none p-2"
-                  />
+                  <input id="password" type="password" {...register('password', { required: true })} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#00B14F] sm:text-sm sm:leading-6 outline-none p-2" />
                 </div>
               </div>
 
               <div>
-                <button
-                  type="submit"
-                  className="flex w-full justify-center rounded-md bg-[#00B14F] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#00B14F] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00B14F]">
+                <button type="submit" className="flex w-full justify-center rounded-md bg-[#00B14F] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#00B14F] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00B14F]">
                   Create
                 </button>
               </div>
@@ -118,9 +103,7 @@ const RegisterPage = () => {
 
             <p className="mt-10 text-center text-sm text-gray-500">
               Already a member ? &nbsp;
-              <Link
-                to="/login"
-                className="font-semibold leading-6 text-[#00B14F] hover:text-[#00B14F]">
+              <Link to="/login" className="font-semibold leading-6 text-[#00B14F] hover:text-[#00B14F]">
                 Login to your account
               </Link>
             </p>

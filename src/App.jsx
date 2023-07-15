@@ -8,6 +8,10 @@ import Layout from "./layout/layout";
 import { HomePage } from "./pages/HomePage";
 import AllRequests from "./pages/AllRequests/AllRequests";
 import DateTimePicker from "./pages/TestPage";
+
+import axios from 'axios'
+axios.defaults.baseURL = 'http://localhost:8080'
+
 function App() {
 	return (
 		<Layout>
