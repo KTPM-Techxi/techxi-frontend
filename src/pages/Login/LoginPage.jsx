@@ -1,13 +1,15 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginSuccess, loginFailed } from '../../app/reducers/authSlice';
 import axios from 'axios';
 
 const LoginPage = () => {
   const userRef = useRef();
   const errorRef = useRef();
 
+  const isUserLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -21,6 +23,12 @@ const LoginPage = () => {
     console.log(data);
     try {
       const response = await axios.post('/users/login', data);
+      if (response.status === 200) {
+        dispatch(loginSuccess(response.data));
+        console.log(response.data);
+      } else {
+        dispatch(loginFailed('Login failed'));
+      }
       console.log(response);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
@@ -28,9 +36,14 @@ const LoginPage = () => {
       } else {
         console.log('Login failed');
       }
+      dispatch(loginFailed('Login failed happened in the catch block'));
     }
   }
-
+  useEffect(() => {
+    if (isUserLoggedIn) {
+      navigate('/');
+    }
+  }, [isUserLoggedIn]);
   return (
     <div>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">

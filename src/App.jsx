@@ -1,5 +1,5 @@
 import { HashRouter as Router, Route, Routes } from "react-router-dom"
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./pages/Login/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ErrorPage from "./pages/ErrorPage";
 import Root from "./routes/RootPage";
