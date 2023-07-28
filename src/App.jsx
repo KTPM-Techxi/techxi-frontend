@@ -11,6 +11,8 @@ import DateTimePicker from "./pages/TestPage";
 
 import axios from 'axios'
 import { UserList } from "./pages/UserList";
+import InputUserInforForm from "./components/CallCenter/InputUserInforForm";
+import Map from "./components/Map";
 axios.defaults.baseURL = 'http://localhost:8080'
 
 function App() {
@@ -23,6 +25,7 @@ function App() {
 			<Route path="/requests" element={<AllRequests />} />
 			<Route path="/request" element={<RequestsPage />} />
 			<Route path="/userlist" element={<UserList />} />
+			<Route path="/map" element={<Map />} />
 			{/* Handle Error page */}
 			<Route path="*" element={<ErrorPage />} />
 			{/* Test page to test component */}

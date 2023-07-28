@@ -9,6 +9,7 @@ import axios from 'axios';
 
 function NavList({ handleLogout }) {
   const isUserLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
   return (
     <ul className="justify-between my-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6 ">
       <div className="flex item-left col-span-3 lg:col-span-1">
@@ -59,6 +60,7 @@ export default function NavigationBar() {
     e.preventDefault();
     try {
       await axios.post('/users/logout');
+      localStorage.removeItem('user');
       dispatch(logoutSuccess());
       navigate('/');
     } catch (error) {

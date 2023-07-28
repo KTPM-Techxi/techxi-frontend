@@ -23,9 +23,12 @@ const LoginPage = () => {
     console.log(data);
     try {
       const response = await axios.post('/users/login', data);
+      console.log(response);
       if (response.status === 200) {
         dispatch(loginSuccess(response.data));
+        localStorage.setItem('user', JSON.stringify(response.data));
         console.log(response.data);
+        return response.data;
       } else {
         dispatch(loginFailed('Login failed'));
       }
@@ -39,11 +42,21 @@ const LoginPage = () => {
       dispatch(loginFailed('Login failed happened in the catch block'));
     }
   }
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      dispatch(loginSuccess(userData));
+    }
+  }, []);
+
   useEffect(() => {
     if (isUserLoggedIn) {
       navigate('/');
     }
   }, [isUserLoggedIn]);
+
   return (
     <div>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
