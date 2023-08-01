@@ -2,7 +2,7 @@ import { DatePicker } from 'antd';
 import { useForm } from 'react-hook-form';
 import React from 'react';
 import GoogleMapReact from 'google-map-react';
-import Map from '../Map';
+import Map from '../Map/Map';
 
 const SimpleMap = () => {
   const defaultProps = {

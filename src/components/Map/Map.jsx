@@ -4,6 +4,8 @@ import { FaLocationArrow, FaTimes, FaDirections, FaMapMarkerAlt, FaCircle, FaExc
 import { useJsApiLoader, GoogleMap, Marker, Autocomplete, DirectionsRenderer } from '@react-google-maps/api';
 import { useEffect, useRef, useState } from 'react';
 import { Skeleton } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { setDestination, setOrigin } from '../../app/reducers/mapSlice';
 const center = { lat: 10.762831, lng: 106.682476 };
 
 function Map() {
@@ -18,11 +20,12 @@ function Map() {
   const [duration, setDuration] = useState('');
   const [transportationMode, setTransportationMode] = useState('');
   const [isSearch, setIsSearch] = useState(false);
-  const [originValue, setOriginValue] = useState('')
-  const [desinationValue, setdesinationValue] = useState('')
-  const originRef = useRef();
-  const destiantionRef = useRef();
-  const inputRef = useRef();
+  const [isReverse, setIsReverse] = useState(false);
+  const originRef = useRef(null);
+  const destiantionRef = useRef(null);
+  const dispatch = useDispatch()
+  const originStore = useSelector((state) => state.map.origin);
+  const destinationStore = useSelector((state) => state.map.destination);
   function handleBackToMap() {
     map.panTo(center);
     map.setZoom(18);
@@ -38,7 +41,7 @@ function Map() {
       origin: originRef.current.value,
       destination: destiantionRef.current.value,
       // eslint-disable-next-line no-undef
-      travelMode: google.maps.TravelMode[transportationMode]
+      travelMode: google.maps.TravelMode[transportationMode ? transportationMode : 'DRIVING']
     });
     setDirectionsResponse(results);
     setDistance(results.routes[0].legs[0].distance.text);
@@ -64,18 +67,41 @@ function Map() {
         const location = results[0].geometry.location;
         map.panTo({ lat: location.lat(), lng: location.lng() });
         map.setZoom(15);
+        dispatch(setOrigin(place))
       } else {
         console.error('Geocoder failed due to: ', status);
       }
     });
   }
+  useEffect(() => {
+    console.log(originStore);
+    console.log(destinationStore);
+
+    return () => {
+      console.log('clean up');
+    }
+  }, [originStore, destinationStore])
+
   function handleReverseRoad() {
-    let originSearchText = originValue;
-    let destiantionSearchText = desinationValue;
-    setOriginValue(destiantionSearchText)
-    setdesinationValue(originSearchText)
-    handleOriginPlaceChanged()
+    setIsReverse(!isReverse)
+    if (isReverse) {
+      const temp = originRef.current.value;
+      originRef.current.value = destiantionRef.current.value;
+      destiantionRef.current.value = temp;
+    } else {
+      const temp = destiantionRef.current.value;
+      destiantionRef.current.value = originRef.current.value;
+      originRef.current.value = temp;
+    }
   }
+  useEffect(() => {
+
+
+    return () => {
+
+    }
+  }, [])
+
   if (!isLoaded) {
     return <>
       <Box padding='6' boxShadow='lg' bg='white'>
@@ -154,9 +180,8 @@ function Map() {
               options={{
                 componentRestrictions: { country: 'VN' } // Set the country restriction to Vietnam
               }}>
-              <Input type="text" placeholder="Origin" ref={originRef} value={originRef?.current?.value}
+              <Input type="text" placeholder="Origin" ref={originRef}
                 onChange={(e) => {
-                  setOriginValue(e.target.value)
                   if (!e.target.value) {
                     setIsSearch(false);
                   }
@@ -167,10 +192,10 @@ function Map() {
         <HStack spacing={4} mt={1} justifyContent="space-between">
           {isSearch && <>
             <Box flexGrow={1}>
-              <Autocomplete>
-                <Input type="text" placeholder="Destination" ref={destiantionRef} value={destiantionRef?.current?.value} onChange={(e) => {
-                  setdesinationValue(e.target.value)
-                }} />
+              <Autocomplete onPlaceChanged={() => {
+                dispatch(setDestination(destiantionRef.current.value))
+              }}>
+                <Input type="text" placeholder="Destination" ref={destiantionRef} />
               </Autocomplete>
             </Box>
             <ButtonGroup>
