@@ -1,8 +1,9 @@
-import { Box, Button, ButtonGroup, Flex, HStack, IconButton, Input, SkeletonText, Text, Select } from '@chakra-ui/react';
-import { FaLocationArrow, FaTimes, FaDirections } from 'react-icons/fa';
+import { Box, Button, ButtonGroup, Flex, HStack, IconButton, Input, SkeletonText, Text, Select, Textarea, Stack, SkeletonCircle } from '@chakra-ui/react';
+import { FaLocationArrow, FaTimes, FaDirections, FaMapMarkerAlt, FaCircle, FaExchangeAlt } from 'react-icons/fa';
 
 import { useJsApiLoader, GoogleMap, Marker, Autocomplete, DirectionsRenderer } from '@react-google-maps/api';
 import { useEffect, useRef, useState } from 'react';
+import { Skeleton } from 'antd';
 const center = { lat: 10.762831, lng: 106.682476 };
 
 function Map() {
@@ -11,23 +12,22 @@ function Map() {
     libraries: ['places', 'geometry', 'geocoding']
   });
 
-  const [map, setMap] = useState(/** @type google.maps.Map */ (null));
+  const [map, setMap] = useState(/** @type google.maps.Map */(null));
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [distance, setDistance] = useState('');
   const [duration, setDuration] = useState('');
   const [transportationMode, setTransportationMode] = useState('');
-
+  const [isSearch, setIsSearch] = useState(false);
+  const [originValue, setOriginValue] = useState('')
+  const [desinationValue, setdesinationValue] = useState('')
   const originRef = useRef();
   const destiantionRef = useRef();
-
+  const inputRef = useRef();
   function handleBackToMap() {
     map.panTo(center);
     map.setZoom(18);
     console.log('hello');
   }
-  useEffect(() => {
-    console.log('Hello');
-  }, []);
   async function calculateRoute() {
     if (originRef.current.value === '' || destiantionRef.current.value === '') {
       return;
@@ -38,7 +38,7 @@ function Map() {
       origin: originRef.current.value,
       destination: destiantionRef.current.value,
       // eslint-disable-next-line no-undef
-      travelMode: google.maps.TravelMode.DRIVING
+      travelMode: google.maps.TravelMode[transportationMode]
     });
     setDirectionsResponse(results);
     setDistance(results.routes[0].legs[0].distance.text);
@@ -51,12 +51,13 @@ function Map() {
     setDuration('');
     originRef.current.value = '';
     destiantionRef.current.value = '';
+    setIsSearch(false);
   }
   function handleOriginPlaceChanged() {
     const place = originRef.current.value.toString();
     console.log(place);
     if (!place) return;
-
+    else setIsSearch(true);
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode({ address: place }, (results, status) => {
       if (status === 'OK' && results && results.length > 0) {
@@ -68,8 +69,61 @@ function Map() {
       }
     });
   }
+  function handleReverseRoad() {
+    let originSearchText = originValue;
+    let destiantionSearchText = desinationValue;
+    setOriginValue(destiantionSearchText)
+    setdesinationValue(originSearchText)
+    handleOriginPlaceChanged()
+  }
   if (!isLoaded) {
-    return <SkeletonText />;
+    return <>
+      <Box padding='6' boxShadow='lg' bg='white'>
+        <Flex gap={10} flexWrap>
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+        </Flex>
+        <SkeletonText mt='4' noOfLines={33} spacing='4' skeletonHeight='2' />
+        <Flex gap={10} flexWrap>
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+          <SkeletonCircle size='10' />
+        </Flex>
+      </Box>
+    </>;
   }
   return (
     <Flex position="relative" flexDirection="column" alignItems="center" h="100vh" w="100vw">
@@ -91,32 +145,43 @@ function Map() {
           {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
         </GoogleMap>
       </Box>
-      <Box p={4} borderRadius="lg" m={4} bgColor="white" shadow="base" minW="container.md" zIndex="1">
-        <HStack spacing={2} justifyContent="space-between">
-          <Box flexGrow={1}>
+      <Flex flexDirection='column' p={4} px={12} borderRadius="lg" m={4} mt={0} bgColor="white" shadow="base" minW={'60%'} zIndex="1" gap={4} className='relative'>
+        <HStack spacing={4} justifyContent="space-between">
+          <Box flexGrow={3}>
             <Autocomplete
               onPlaceChanged={handleOriginPlaceChanged}
               // onLoad={handleOriginPlaceChanged}
               options={{
                 componentRestrictions: { country: 'VN' } // Set the country restriction to Vietnam
               }}>
-              <Input type="text" placeholder="Origin" ref={originRef} />
+              <Input type="text" placeholder="Origin" ref={originRef} value={originRef?.current?.value}
+                onChange={(e) => {
+                  setOriginValue(e.target.value)
+                  if (!e.target.value) {
+                    setIsSearch(false);
+                  }
+                }} />
             </Autocomplete>
           </Box>
-          <Box flexGrow={1}>
-            <Autocomplete>
-              <Input type="text" placeholder="Destination" ref={destiantionRef} />
-            </Autocomplete>
-          </Box>
-
-          <ButtonGroup>
-            <Button colorScheme="pink" type="submit" onClick={calculateRoute}>
-              Calc
-            </Button>
-            <IconButton aria-label="center back" icon={<FaTimes />} onClick={clearRoute} />
-          </ButtonGroup>
         </HStack>
-        <HStack spacing={4} mt={4} justifyContent="space-between">
+        <HStack spacing={4} mt={1} justifyContent="space-between">
+          {isSearch && <>
+            <Box flexGrow={1}>
+              <Autocomplete>
+                <Input type="text" placeholder="Destination" ref={destiantionRef} value={destiantionRef?.current?.value} onChange={(e) => {
+                  setdesinationValue(e.target.value)
+                }} />
+              </Autocomplete>
+            </Box>
+            <ButtonGroup>
+              <Button colorScheme="pink" type="submit" onClick={calculateRoute}>
+                Calc
+              </Button>
+              <IconButton aria-label="center back" icon={<FaTimes />} onClick={clearRoute} />
+            </ButtonGroup>
+          </>}
+        </HStack>
+        <HStack spacing={4} justifyContent="space-between">
           <Box className="relative">
             <FaDirections size={'30px'} color="#1a73e8" className="cursor-pointer hover:fill-[#1b5fb8] transition-all" onClick={handleBackToMap} />
             <span className="absolute invisible">Helo</span>
@@ -141,7 +206,27 @@ function Map() {
             }}
           />
         </HStack>
-      </Box>
+        <div className="flex flex-col items-center gap-1 absolute top-7 left-[12px]">
+          {/* I want a circle dot here */}
+          <FaMapMarkerAlt size={'20px'} className='text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]' />
+
+          {/* I want a three veritcal dots here */}
+          {isSearch && <div className="flex flex-col gap-1">
+            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+          </div>}
+
+          {/* I want a circle white here */}
+          {isSearch && <FaCircle size={'15px'} className='text-white border-black border-[1.5px] mt-[2px] rounded-full hover:text-[#00B14F] transition-all cursor-pointer' />}
+        </div>
+        <div className="flex flex-col items-center gap-1 absolute top-16 right-[12px]" onClick={handleReverseRoad}>
+          {/* I want a reverse icon here */}
+          <FaExchangeAlt size={'20px'} className='rotate-90 text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]' />
+
+          {/* I want a three veritcal dots here */}
+        </div>
+      </Flex>
     </Flex>
   );
 }
