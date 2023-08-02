@@ -24,37 +24,41 @@ export const UserList = () => {
                     </div>
                 </form>
                 <span className="inline-grid items-center grid-cols-2 ml-2">
-                    <span>
-                        <button
-                            className={`bg-white ${selectedOption === 'customer'
-                                ? 'bg-[#00B12F] text-white'
-                                : 'hover:bg-gray-100 text-gray-800'
-                                } text-sm font-semibold py-2 px-2 border border-gray-400 rounded shadow mx-2`}
-                            onClick={() => handleOptionChange('customer')}
-                        >
-                            <FontAwesomeIcon
-                                icon={faUserGroup}
-                                className={selectedOption === 'customer' ? 'text-white' : 'text-[#00B14F]'}
-                            />{' '}
-                            Customer
-                        </button>
-                    </span>
-                    <span>
-                        <button
-                            className={`bg-white ${selectedOption === 'driver'
-                                ? 'bg-[#00B12F] text-white'
-                                : 'hover:bg-gray-100 text-gray-800'
-                                }  text-center text-sm font-semibold py-2 px-2 border border-gray-400 rounded shadow mx-2`}
-                            onClick={() => handleOptionChange('driver')}
-                        >
-                            <FontAwesomeIcon
-                                icon={faCab}
-                                className={selectedOption === 'driver' ? 'text-white' : 'text-[#00B14F]'}
-                            />{' '}
-                            Driver
-                        </button>
-                    </span>
+                <span>
+                    <button
+                    className={`${
+                        selectedOption === 'customer'
+                        ? 'bg-[#00B14F] text-white'
+                        : 'hover:bg-gray-100 text-gray-800'
+                    } text-sm font-semibold py-2 px-2 border border-gray-400 rounded shadow mx-2`}
+                    onClick={() => handleOptionChange('customer')}
+                    >
+                    <FontAwesomeIcon
+                        icon={faUserGroup}
+                        className={selectedOption === 'customer' ? 'text-white' : 'text-[#00B12F]'}
+                    />{' '}
+                    Customer
+                    </button>
                 </span>
+                <span>
+                    <button
+                    className={`${
+                        selectedOption === 'driver'
+                        ? 'bg-[#00B14F] text-white'
+                        : 'hover:bg-gray-100 text-gray-800'
+                    } text-center text-sm font-semibold py-2 px-2 border border-gray-400 rounded shadow mx-2`}
+                    onClick={() => handleOptionChange('driver')}
+                    >
+                    <FontAwesomeIcon
+                        icon={faCab}
+                        className={selectedOption === 'driver' ? 'text-white' : 'text-[#00B12F]'}
+                    />{' '}
+                    Driver
+                    </button>
+                </span>
+                </span>
+
+
                 <div className='flex-1 flex justify-end items-center'>
                     <button className="bg-[#00B14F] hover:bg-[#009e3d] text-white text-sm font-semibold py-2 px-2 border border-gray-400 rounded shadow mx-2">
                         Add User
