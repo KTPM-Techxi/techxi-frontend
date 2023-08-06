@@ -16,7 +16,7 @@ export function getTagColor(tag) {
     driverCompleteTheDrive: '#06d6a0',
     driverDeclinedToPick: '#ef233c',
     userCancelBooking: '#d90429',
-    defaultColor: 'black'
+    defaultColor: 'black',
   };
 
   switch (tag) {
@@ -35,4 +35,12 @@ export function getTagColor(tag) {
     default:
       return color.defaultColor;
   }
+}
+
+export function calCulateFees(distance, duration, baseFare, ratePerKm, ratePerMin, isCar = false) {
+  let fees = baseFare + distance * ratePerKm + duration * ratePerMin;
+  if (isCar) {
+    fees *= 1.125 + 100;
+  }
+  return fees;
 }

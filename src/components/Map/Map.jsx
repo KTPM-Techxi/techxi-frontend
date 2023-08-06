@@ -1,5 +1,7 @@
 import { Box, Button, ButtonGroup, Flex, HStack, IconButton, Input, SkeletonText, Text, Select, Textarea, Stack, SkeletonCircle } from '@chakra-ui/react';
-import { FaLocationArrow, FaTimes, FaDirections, FaMapMarkerAlt, FaCircle, FaExchangeAlt, FaToggleOff, FaToggleOn } from 'react-icons/fa';
+import { FaLocationArrow, FaTimes, FaDirections, FaMapMarkerAlt, FaCircle, FaExchangeAlt, FaToggleOff, FaToggleOn, FaMoneyBillAlt } from 'react-icons/fa';
+import { GiConfirmed } from 'react-icons/gi';
+import { TbMapPinSearch } from 'react-icons/tb';
 import { TbSquareToggleHorizontal } from 'react-icons/tb';
 import { useJsApiLoader, GoogleMap, Marker, Autocomplete, DirectionsRenderer } from '@react-google-maps/api';
 import Geocode from 'react-geocode';
@@ -9,6 +11,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setDestination, setOrigin } from './mapSlice';
 import SkeletonLoading from '../SkeletonLoading';
 import ToggleBtn from '../ToggleBtn';
+import { useLocation } from 'react-router-dom';
+import { calCulateFees } from '../../../utils/helpers';
+import Numeral from 'react-numeral';
 const center = { lat: 10.762831, lng: 106.682476 };
 
 function handleBackToMap(map, center) {
@@ -31,6 +36,7 @@ function Map() {
     isReverse: false,
     isSearch: false,
     isModalOpen: true,
+    isShowCost: false,
   });
   const setState = (obj) => {
     _setState((old) => ({ ...old, ...obj }));
@@ -40,18 +46,26 @@ function Map() {
   const dispatch = useDispatch();
   const originStore = useSelector((state) => state.map.origin);
   const destinationStore = useSelector((state) => state.map.destination);
+  // Get the state from the location object
+  const { state: UserFormInputInfor } = useLocation();
+  const currentUserInfor = useSelector((state) => state.currentUserInfor.infor);
 
   async function calculateRoute() {
     if (originRef.current.value === '' || destiantionRef.current.value === '') {
       return;
     }
+    setState({ isShowCost: true });
     // eslint-disable-next-line no-undef
     const directionsService = new google.maps.DirectionsService();
     const results = await directionsService.route({
       origin: originRef.current.value,
       destination: destiantionRef.current.value,
       // eslint-disable-next-line no-undef
-      travelMode: google.maps.TravelMode[transportationMode ? transportationMode : 'DRIVING'],
+      travelMode: google.maps.TravelMode[transportationMode ? transportationMode : 'TWO_WHEELER'],
+      // eslint-disable-next-line no-undef
+      unitSystem: google.maps.UnitSystem.METRIC,
+      language: 'vi',
+      region: 'VN',
     });
     setDirectionsResponse(results);
     setDistance(results.routes[0].legs[0].distance.text);
@@ -123,8 +137,11 @@ function Map() {
       originRef.current.value = temp;
     }
   }
+  function handleFindDrivers() {
+    // TODO: Find drivers
+  }
   useEffect(() => {
-    return () => {};
+    console.log('useEffect', UserFormInputInfor, 'and', currentUserInfor);
   }, []);
 
   if (!isLoaded) {
@@ -150,7 +167,7 @@ function Map() {
           {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
         </GoogleMap>
       </Box>
-      <ToggleBtn isModalOpen={state.isModalOpen} setState={setState} className="absolute z-[50] left-[7px] -top-[15px]" text={'Toggle Search'} />
+      <ToggleBtn isModalOpen={state.isModalOpen} setState={setState} className="absolute z-[50] left-[7px] -top-[15px] " text={''} />
       {
         <Flex flexDirection="column" p={4} px={12} borderRadius="lg" m={4} mt={0} bgColor="white" shadow="base" minW={'60%'} zIndex="1" gap={4} className="relative transition-all" opacity={state.isModalOpen ? '1' : '0'} visibility={state.isModalOpen ? 'visible' : 'hidden'}>
           <HStack spacing={4} justifyContent="space-between">
@@ -186,8 +203,8 @@ function Map() {
                   </Autocomplete>
                 </Box>
                 <ButtonGroup>
-                  <Button colorScheme="pink" type="submit" onClick={calculateRoute}>
-                    Calc
+                  <Button colorScheme="green" type="submit" onClick={calculateRoute} className="inline-flex gap-2">
+                    Calc {<FaLocationArrow />}
                   </Button>
                   <IconButton aria-label="center back" icon={<FaTimes />} onClick={clearRoute} />
                 </ButtonGroup>
@@ -197,16 +214,16 @@ function Map() {
           <HStack spacing={4} justifyContent="space-between">
             <Box className="relative">
               <FaDirections size={'30px'} color="#1a73e8" className="cursor-pointer hover:fill-[#1b5fb8] transition-all" onClick={() => handleBackToMap(map, Geocode.fromAddress(originStore))} />
-              <span className="absolute invisible">Helo</span>
             </Box>
             <Text flexGrow={1}>Distance: {distance} </Text>
             <Text flexGrow={1}>Duration: {duration} </Text>
             <Box flexGrow={1}>
               <Select value={transportationMode} onChange={(e) => setTransportationMode(e.target.value)}>
-                <option value="DRIVING">Driving</option>
-                <option value="WALKING">Walking</option>
+                <option value="DRIVING">Car Driving</option>
+                <option value="TWO_WHEELER">Motobike Driving</option>
                 <option value="BICYCLING">Bicycling</option>
                 <option value="TRANSIT">Transit</option>
+                <option value="WALKING">Walking</option>
               </Select>
             </Box>
             <IconButton
@@ -219,6 +236,22 @@ function Map() {
               }}
             />
           </HStack>
+
+          {state.isShowCost && (
+            <HStack spacing={4} justifyContent="flex-start">
+              <Box className="relative">
+                <FaMoneyBillAlt size={'30px'} color="#54be6e" className="cursor-pointer hover:fill-[#31af51] transition-all" onClick={() => handleBackToMap(map, Geocode.fromAddress(originStore))} />
+              </Box>
+              <Text flexGrow={1.2}>
+                Costs: <Numeral value={calCulateFees(+distance.split('')[0], +duration.split('')[0], 100000, 100000, 10000)} format={'0,0'} />
+                {' đ'}
+              </Text>
+              <Button flexGrow={1} colorScheme="green" type="submit" onClick={handleFindDrivers} className="inline-flex gap-2">
+                Find nearby drivers {<TbMapPinSearch size={'30px'} />}
+              </Button>
+            </HStack>
+          )}
+
           <div className="flex flex-col items-center gap-1 absolute top-7 left-[12px]">
             <FaMapMarkerAlt size={'20px'} className="text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]" onClick={() => handleFocus(originRef)} />
 

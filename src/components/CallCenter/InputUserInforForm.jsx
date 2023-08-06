@@ -21,10 +21,11 @@ const InputUserInforForm = () => {
     const prevCurrentInfor = currentUserInfor;
     dispatch(setInfor(data));
     formRef.current = data;
+    // If the current user infor is changed, navigate to map page
     if (!_.isEqual(prevCurrentInfor, data) && !_.isEmpty(data)) {
-      setTimeout(() => {
-        navigate('/map');
-      }, 2000);
+      // setTimeout(() => {
+      navigate('/map', { state: { data: data } });
+      // }, 2000);
     }
   };
   useEffect(() => {
@@ -59,14 +60,14 @@ const InputUserInforForm = () => {
               id="phoneNumber"
               {...register('phoneNumber', {
                 required: true,
-                pattern: /^(\+?\d{1,4})?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
+                // pattern: /^(\+?\d{1,4})?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
               })}
               type="tel"
               autoComplete="tel"
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-inset focus:ring-[#00B14F] sm:text-sm sm:leading-6 p-2"
             />
             {errors.phoneNumber?.type === 'required' && <span className="text-red-500 text-sm">Please enter your phone number.</span>}
-            {errors.phoneNumber?.type === 'pattern' && <span className="text-red-500 text-sm">Please enter a valid phone number.</span>}
+            {/* {errors.phoneNumber?.type === 'pattern' && <span className="text-red-500 text-sm">Please enter a valid phone number.</span>} */}
           </div>
         </div>
 
