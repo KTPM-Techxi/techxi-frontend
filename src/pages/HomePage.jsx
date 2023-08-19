@@ -18,7 +18,7 @@ export const HomePage = () => {
     setIsPlaying(!isPlaying);
   };
   return (
-    <div className="relative h-50 w-full overflow-x-hidden">
+    <div className="h-50 w-full overflow-x-hidden">
       <video className="w-full h-50 top-0 left-0 z-0" autoPlay muted loop onClick={togglePlayingVideo}>
         <source src="https://assets.grab.com/wp-content/uploads/media/videos/hero_banner_singapore_q50_mobile.webm" type="video/mp4" />
       </video>
