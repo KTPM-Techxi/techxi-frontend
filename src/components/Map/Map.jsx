@@ -8,12 +8,14 @@ import Geocode from 'react-geocode';
 import { useEffect, useRef, useState } from 'react';
 import { Skeleton } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { setDestination, setOrigin } from './mapSlice';
+import { setCost, setDestination, setOrigin, setTransportationMode as setTransportationModeStore, setDistance as setDistanceStore, setDuration as setDurationStore } from './mapSlice';
 import SkeletonLoading from '../SkeletonLoading';
 import ToggleBtn from '../ToggleBtn';
 import { useLocation } from 'react-router-dom';
 import { calCulateFees } from '../../../utils/helpers';
 import Numeral from 'react-numeral';
+import axios from 'axios';
+
 const center = { lat: 10.762831, lng: 106.682476 };
 
 function handleBackToMap(map, center) {
@@ -31,7 +33,7 @@ function Map() {
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [distance, setDistance] = useState('');
   const [duration, setDuration] = useState('');
-  const [transportationMode, setTransportationMode] = useState('');
+  const [transportationMode, setTransportationMode] = useState('DRIVING');
   const [state, _setState] = useState({
     isReverse: false,
     isSearch: false,
@@ -46,6 +48,10 @@ function Map() {
   const dispatch = useDispatch();
   const originStore = useSelector((state) => state.map.origin);
   const destinationStore = useSelector((state) => state.map.destination);
+  const distanceStore = useSelector((state) => state.map.distance);
+  const durationStore = useSelector((state) => state.map.duration);
+  const transportationModeStore = useSelector((state) => state.map.transportationMode);
+  const costStore = useSelector((state) => state.map.cost);
   // Get the state from the location object
   const { state: UserFormInputInfor } = useLocation();
   const currentUserInfor = useSelector((state) => state.currentUserInfor.infor);
@@ -85,7 +91,7 @@ function Map() {
   }
   function handleOriginPlaceChanged() {
     const place = originRef.current.value.toString();
-    console.log(place);
+    console.log('origin place changes', place);
     if (!place) return;
     else setState({ isSearch: true });
     const geocoder = new window.google.maps.Geocoder();
@@ -102,6 +108,7 @@ function Map() {
   }
   function handleDestinationPlaceChanged() {
     const place = destiantionRef.current.value.toString();
+    console.log('destination place changes', place);
     if (!place) return;
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode({ address: place }, (results, status) => {
@@ -125,7 +132,7 @@ function Map() {
     };
   }, [originStore, destinationStore]);
 
-  function handleReverseRoad() {
+  async function handleReverseRoad() {
     setState({ isReverse: !state.isReverse });
     if (state.isReverse) {
       const temp = originRef.current.value;
@@ -136,13 +143,47 @@ function Map() {
       destiantionRef.current.value = originRef.current.value;
       originRef.current.value = temp;
     }
+    await calculateRoute();
   }
   function handleFindDrivers() {
     // TODO: Find drivers
+    console.log('handleFindDrivers currentUserInfor', currentUserInfor);
+    console.log('handleFindDrivers UserFormInputInfor', UserFormInputInfor);
+    dispatch(setCost(calCulateFees(+distance.split('')[0], +duration.split('')[0], 100000, 100000, 10000)));
+    dispatch(setOrigin(destiantionRef.current.value));
+    dispatch(setDestination(originRef.current.value));
+    dispatch(setOrigin(originRef.current.value));
+    dispatch(setDestination(destiantionRef.current.value));
+    dispatch(setDistanceStore(distance));
+    dispatch(setDurationStore(duration));
+    dispatch(setTransportationModeStore(transportationMode));
+    const data = {
+      ...UserFormInputInfor,
+      destinationStore,
+      originStore,
+      distanceStore,
+      durationStore,
+      transportationModeStore,
+      costStore,
+    };
+    console.log('🚀 ~ file: Map.jsx:170 ~ handleFindDrivers ~ data:', data);
+    sendBookingRequest(data);
   }
+  const sendBookingRequest = async (data) => {
+    const response = await axios.post('/create', data);
+  };
+
+  useEffect(() => {
+    console.log('🚀 CostsStore:', costStore);
+    console.log('🚀 originStore:', originStore);
+    console.log('🚀 destinationStore:', destinationStore);
+    console.log('🚀 distanceStore:', distanceStore);
+    console.log('🚀 durationStore:', durationStore);
+    console.log('🚀 transportationModeStore:', transportationModeStore);
+  }, [costStore, originStore, destinationStore, distanceStore, durationStore, transportationModeStore]);
   useEffect(() => {
     console.log('useEffect', UserFormInputInfor, 'and', currentUserInfor);
-  }, []);
+  }, [currentUserInfor, UserFormInputInfor]);
 
   if (!isLoaded) {
     return <SkeletonLoading />;

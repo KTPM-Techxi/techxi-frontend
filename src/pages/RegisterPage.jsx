@@ -1,13 +1,13 @@
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { Select, Stack } from '@chakra-ui/react';
-import { selectAnatomy } from '@chakra-ui/anatomy';
-import { createMultiStyleConfigHelpers, defineStyle } from '@chakra-ui/react';
+import { Select } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { DatePicker, Space } from 'antd';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../app/reducers/authSlice';
 dayjs.extend(customParseFormat);
 const { RangePicker } = DatePicker;
 const dateFormat = 'YYYY/MM/DD';
@@ -22,6 +22,7 @@ const RegisterPage = () => {
   } = useForm();
   const [date, setDate] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleChange = (value) => {
     console.log('Selected Time: ', value);
     setDate(value);
@@ -34,6 +35,7 @@ const RegisterPage = () => {
       if (response.status === 200) {
         alert('Register successfully');
         navigate('/');
+        dispatch(loginSuccess(data));
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
