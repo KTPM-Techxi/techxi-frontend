@@ -12,12 +12,12 @@ function NavList({ handleLogout }) {
 
   return (
     <ul className="justify-between my-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6 ">
-    <div className="flex item-left col-span-3 lg:col-span-1">
-      <img className="mr-2 mt-1 h-8 w-auto" src="https://companieslogo.com/img/orig/GRAB-e42c2148.png?t=1643541585" alt="Your Company" />
-      <Link to={'/'} as="a" variant="h6" className="mr-4 cursor-pointer py-1.5 text-[#00B14F] font-bold text-lg">
-        Call Center
-      </Link>
-    </div>
+      <div className="flex item-left col-span-3 lg:col-span-1">
+        <img className="mr-2 mt-1 h-8 w-auto" src="https://companieslogo.com/img/orig/GRAB-e42c2148.png?t=1643541585" alt="Your Company" />
+        <Link to={'/'} as="a" variant="h6" className="mr-4 cursor-pointer py-1.5 text-[#00B14F] font-bold text-lg">
+          Call Center
+        </Link>
+      </div>
       <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
         <Link to={'/requests'} className="flex items-center hover:text-[#00B14F] text-black">
           <FontAwesomeIcon icon={faList} className="mr-1" />
@@ -68,7 +68,7 @@ export default function NavigationBar() {
     }
   }
 
-  const handleWindowResize = () => window.innerWidth >= 960 && setOpenNav(false);
+  const handleWindowResize = () => window.innerWidth >= 960;
 
   React.useEffect(() => {
     window.addEventListener('resize', handleWindowResize);
@@ -85,10 +85,8 @@ export default function NavigationBar() {
           <div className="hidden lg:block">
             <NavList handleLogout={handleLogout} />
           </div>
-          </div>
+        </div>
       </Navbar>
-
-    
     </div>
   );
 }

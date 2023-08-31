@@ -8,12 +8,19 @@ import Geocode from 'react-geocode';
 import { useEffect, useRef, useState } from 'react';
 import { Skeleton } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { setDestination, setOrigin } from './mapSlice';
+import { setCost, setDestination, setOrigin, setTransportationMode as setTransportationModeStore, setDistance as setDistanceStore, setDuration as setDurationStore, setParsedAdress } from './mapSlice';
 import SkeletonLoading from '../SkeletonLoading';
 import ToggleBtn from '../ToggleBtn';
 import { useLocation } from 'react-router-dom';
 import { calCulateFees } from '../../../utils/helpers';
 import Numeral from 'react-numeral';
+import axios from 'axios';
+import dayjs from 'dayjs';
+import ThreeDots from './components/ThreeDots';
+import DestinationSearchBox from './components/DestinationSearchBox';
+import Costs from './components/Costs';
+import FinalCalculation from './components/FinalCalculation';
+import OriginSearchBox from './components/OriginSearchBox';
 const center = { lat: 10.762831, lng: 106.682476 };
 
 function handleBackToMap(map, center) {
@@ -31,7 +38,7 @@ function Map() {
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [distance, setDistance] = useState('');
   const [duration, setDuration] = useState('');
-  const [transportationMode, setTransportationMode] = useState('');
+  const [transportationMode, setTransportationMode] = useState('DRIVING');
   const [state, _setState] = useState({
     isReverse: false,
     isSearch: false,
@@ -46,6 +53,11 @@ function Map() {
   const dispatch = useDispatch();
   const originStore = useSelector((state) => state.map.origin);
   const destinationStore = useSelector((state) => state.map.destination);
+  const distanceStore = useSelector((state) => state.map.distance);
+  const durationStore = useSelector((state) => state.map.duration);
+  const transportationModeStore = useSelector((state) => state.map.transportationMode);
+  const costStore = useSelector((state) => state.map.cost);
+  const parsedAddress = useSelector((state) => state.map.parsedAdress);
   // Get the state from the location object
   const { state: UserFormInputInfor } = useLocation();
   const currentUserInfor = useSelector((state) => state.currentUserInfor.infor);
@@ -61,7 +73,7 @@ function Map() {
       origin: originRef.current.value,
       destination: destiantionRef.current.value,
       // eslint-disable-next-line no-undef
-      travelMode: google.maps.TravelMode[transportationMode ? transportationMode : 'TWO_WHEELER'],
+      travelMode: google.maps.TravelMode[transportationModeStore ? transportationModeStore : 'TWO_WHEELER'],
       // eslint-disable-next-line no-undef
       unitSystem: google.maps.UnitSystem.METRIC,
       language: 'vi',
@@ -85,16 +97,17 @@ function Map() {
   }
   function handleOriginPlaceChanged() {
     const place = originRef.current.value.toString();
-    console.log(place);
+    console.log('origin place changes', place);
     if (!place) return;
     else setState({ isSearch: true });
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode({ address: place }, (results, status) => {
+      const location = results[0].geometry.location;
+      dispatch(setParsedAdress({ originLat: location.lat(), originlng: location.lng() }));
       if (status === 'OK' && results && results.length > 0) {
-        const location = results[0].geometry.location;
         map.panTo({ lat: location.lat(), lng: location.lng() });
         map.setZoom(15);
-        dispatch(setOrigin(place));
+        dispatch(setOrigin({ place }));
       } else {
         console.error('Geocoder failed due to: ', status);
       }
@@ -102,30 +115,24 @@ function Map() {
   }
   function handleDestinationPlaceChanged() {
     const place = destiantionRef.current.value.toString();
+    console.log('destination place changes', place);
     if (!place) return;
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode({ address: place }, (results, status) => {
+      const location = results[0].geometry.location;
+      dispatch(setParsedAdress({ destinationLat: location.lat(), destinationlng: location.lng() }));
       if (status === 'OK' && results && results.length > 0) {
-        const location = results[0].geometry.location;
         map.panTo({ lat: location.lat(), lng: location.lng() });
         map.setZoom(15);
         calculateRoute();
-        dispatch(setDestination(place));
+        dispatch(setDestination({ place }));
       } else {
         console.error('Geocoder failed due to: ', status);
       }
     });
   }
-  useEffect(() => {
-    console.log(originStore);
-    console.log(destinationStore);
 
-    return () => {
-      console.log('clean up');
-    };
-  }, [originStore, destinationStore]);
-
-  function handleReverseRoad() {
+  async function handleReverseRoad() {
     setState({ isReverse: !state.isReverse });
     if (state.isReverse) {
       const temp = originRef.current.value;
@@ -136,20 +143,99 @@ function Map() {
       destiantionRef.current.value = originRef.current.value;
       originRef.current.value = temp;
     }
+    await calculateRoute();
   }
   function handleFindDrivers() {
     // TODO: Find drivers
+    console.log('handleFindDrivers currentUserInfor', currentUserInfor);
+    console.log('handleFindDrivers UserFormInputInfor', UserFormInputInfor);
+    dispatch(setCost(calCulateFees(+distance.split('')[0], +duration.split('')[0], 100000, 100000, 10000)));
+    dispatch(setOrigin(destiantionRef.current.value));
+    dispatch(setDestination(originRef.current.value));
+    dispatch(setOrigin(originRef.current.value));
+    dispatch(setDestination(destiantionRef.current.value));
+    dispatch(setDistanceStore(distance));
+    dispatch(setDurationStore(duration));
+    // dispatch(setTransportationModeStore(transportationMode));
+    //   {
+    //     "data": {
+    //         "name": "Duc An",
+    //         "phoneNumber": "0935555555",
+    //         "timeToPick": "2023-09-01T12:12",
+    //         "vehicleType": "Car"
+    //     },
+    //     "destinationStore": {
+    //         "place": "Đại học Kinh tế TP.HCM - UEH, Nguyễn Đình Chiểu, Vo Thi Sau Ward, District 3, Ho Chi Minh City, Vietnam"
+    //     },
+    //     "originStore": {
+    //         "place": "Trường Đại học Khoa học Tự nhiên - Đại học Quốc gia TP.HCM, Đường Nguyễn Văn Cừ, Phường 4, District 5, Ho Chi Minh City, Vietnam"
+    //     },
+    //     "distanceStore": "668 km",
+    //     "durationStore": "12 giờ 9 phút",
+    //     "transportationModeStore": "DRIVING",
+    //     "costStore": 710000
+    // }
+    const { name, phoneNumber, timeToPick, vehicleType, destinationStore, originStore, transportationModeStore } = currentUserInfor;
+    const data = {
+      callCenterAgentId: 'AnIDAgent',
+      driverID: 'MinhDriver',
+      customerID: name,
+      pickupTime: timeToPick,
+      pickupLocation: {
+        latitude: parsedAddress.originLat,
+        longtitude: parsedAddress.originlng,
+      },
+      destination: {
+        latitude: parsedAddress.destinationLat,
+        longtitude: parsedAddress.destinationlng,
+      },
+      timeCompletion: durationStore,
+      scheduledTime: durationStore,
+      totalDistance: distanceStore,
+      totalPrice: costStore,
+    };
+    console.log('🚀 ~ file: Map.jsx:170 ~ handleFindDrivers ~ data:', data);
+    sendBookingRequest(data);
   }
+  const sendBookingRequest = async (data) => {
+    const response = await axios.post('/api/v1/callcenter/bookings/create', data);
+    console.log('🚀 ~ sendBookingRequest ~ response:', response);
+  };
+  useEffect(() => {
+    console.log('destinationStore changed', originStore);
+    console.log('destinationStore changed', destinationStore);
+    console.log('parsedAddress changed', parsedAddress);
+  }, [originStore, destinationStore, parsedAddress]);
+
+  useEffect(() => {
+    console.log('🚀 CostsStore:', costStore);
+    console.log('🚀 originStore:', originStore);
+    console.log('🚀 destinationStore:', destinationStore);
+    console.log('🚀 distanceStore:', distanceStore);
+    console.log('🚀 durationStore:', durationStore);
+    console.log('🚀 transportationModeStore:', transportationModeStore);
+  }, [costStore, originStore, destinationStore, distanceStore, durationStore, transportationModeStore]);
+
   useEffect(() => {
     console.log('useEffect', UserFormInputInfor, 'and', currentUserInfor);
-  }, []);
+  }, [currentUserInfor, UserFormInputInfor]);
 
   if (!isLoaded) {
     return <SkeletonLoading />;
   }
   return (
-    <Flex position="relative" flexDirection="column" alignItems="center" h="100vh" w="100vw">
-      <Box position="absolute" left={0} top={0} h="100%" w="100%">
+    <Flex
+      position="relative"
+      flexDirection="column"
+      alignItems="center"
+      h="100vh"
+      w="100vw">
+      <Box
+        position="absolute"
+        left={0}
+        top={0}
+        h="100%"
+        w="100%">
         {/* Google Map Box */}
         <GoogleMap
           center={center}
@@ -167,109 +253,104 @@ function Map() {
           {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
         </GoogleMap>
       </Box>
-      <ToggleBtn isModalOpen={state.isModalOpen} setState={setState} className="absolute z-[50] left-[7px] -top-[15px] " text={''} />
-      {
-        <Flex flexDirection="column" p={4} px={12} borderRadius="lg" m={4} mt={0} bgColor="white" shadow="base" minW={'60%'} zIndex="1" gap={4} className="relative transition-all" opacity={state.isModalOpen ? '1' : '0'} visibility={state.isModalOpen ? 'visible' : 'hidden'}>
-          <HStack spacing={4} justifyContent="space-between">
-            <Box flexGrow={3}>
-              <Autocomplete
-                onPlaceChanged={handleOriginPlaceChanged}
-                // onLoad={handleOriginPlaceChanged}
-                options={{
-                  componentRestrictions: { country: 'VN' }, // Set the country restriction to Vietnam
-                }}>
-                <Input
-                  type="text"
-                  placeholder="Origin"
-                  ref={originRef}
-                  onChange={(e) => {
-                    if (!e.target.value) {
-                      setState({ isSearch: false });
-                    }
-                  }}
-                />
-              </Autocomplete>
-            </Box>
-          </HStack>
-          <HStack spacing={4} mt={1} justifyContent="space-between">
-            {state.isSearch && (
-              <>
-                <Box flexGrow={1}>
-                  <Autocomplete
-                    onPlaceChanged={() => {
-                      handleDestinationPlaceChanged();
-                    }}>
-                    <Input type="text" placeholder="Destination" ref={destiantionRef} />
-                  </Autocomplete>
-                </Box>
-                <ButtonGroup>
-                  <Button colorScheme="green" type="submit" onClick={calculateRoute} className="inline-flex gap-2">
-                    Calc {<FaLocationArrow />}
-                  </Button>
-                  <IconButton aria-label="center back" icon={<FaTimes />} onClick={clearRoute} />
-                </ButtonGroup>
-              </>
-            )}
-          </HStack>
-          <HStack spacing={4} justifyContent="space-between">
-            <Box className="relative">
-              <FaDirections size={'30px'} color="#1a73e8" className="cursor-pointer hover:fill-[#1b5fb8] transition-all" onClick={() => handleBackToMap(map, Geocode.fromAddress(originStore))} />
-            </Box>
-            <Text flexGrow={1}>Distance: {distance} </Text>
-            <Text flexGrow={1}>Duration: {duration} </Text>
-            <Box flexGrow={1}>
-              <Select value={transportationMode} onChange={(e) => setTransportationMode(e.target.value)}>
-                <option value="DRIVING">Car Driving</option>
-                <option value="TWO_WHEELER">Motobike Driving</option>
-                <option value="BICYCLING">Bicycling</option>
-                <option value="TRANSIT">Transit</option>
-                <option value="WALKING">Walking</option>
-              </Select>
-            </Box>
-            <IconButton
-              aria-label="center back"
-              icon={<FaLocationArrow />}
-              isRound
-              onClick={() => {
-                map.panTo();
-                map.setZoom(18);
-              }}
+      {/* Nút hiển thị bật tắt Modal */}
+      <ToggleBtn
+        isModalOpen={state.isModalOpen}
+        setState={setState}
+        className="absolute z-[50] left-[7px] -top-[15px] "
+        text={''}
+      />
+
+      <Flex
+        flexDirection="column"
+        p={4}
+        px={12}
+        borderRadius="lg"
+        m={4}
+        mt={0}
+        bgColor="white"
+        shadow="base"
+        minW={'60%'}
+        zIndex="1"
+        gap={4}
+        className="relative transition-all"
+        opacity={state.isModalOpen ? '1' : '0'}
+        visibility={state.isModalOpen ? 'visible' : 'hidden'}>
+        {/* Hiển thị Search Box Số 1 */}
+        <HStack
+          spacing={4}
+          justifyContent="space-between">
+          <OriginSearchBox
+            setState={setState}
+            handleOriginPlaceChanged={handleOriginPlaceChanged}
+            originRef={originRef}
+          />
+        </HStack>
+        {/* Hiển thị Search Box số 2  */}
+        <HStack
+          spacing={4}
+          mt={1}
+          justifyContent="space-between">
+          {state.isSearch && (
+            <DestinationSearchBox
+              handleDestinationPlaceChanged={handleDestinationPlaceChanged}
+              calculateRoute={calculateRoute}
+              clearRoute={clearRoute}
+              destiantionRef={destiantionRef}
             />
-          </HStack>
-
-          {state.isShowCost && (
-            <HStack spacing={4} justifyContent="flex-start">
-              <Box className="relative">
-                <FaMoneyBillAlt size={'30px'} color="#54be6e" className="cursor-pointer hover:fill-[#31af51] transition-all" onClick={() => handleBackToMap(map, Geocode.fromAddress(originStore))} />
-              </Box>
-              <Text flexGrow={1.2}>
-                Costs: <Numeral value={calCulateFees(+distance.split('')[0], +duration.split('')[0], 100000, 100000, 10000)} format={'0,0'} />
-                {' đ'}
-              </Text>
-              <Button flexGrow={1} colorScheme="green" type="submit" onClick={handleFindDrivers} className="inline-flex gap-2">
-                Find nearby drivers {<TbMapPinSearch size={'30px'} />}
-              </Button>
-            </HStack>
           )}
+        </HStack>
+        {/* Hiển thị Distance, Duration và Loại Car Driving */}
+        {/* Todo: Chọn Car Driving cho đúng */}
+        <FinalCalculation
+          map={map}
+          distance={distance}
+          duration={duration}
+          handleBackToMap={handleBackToMap}
+        />
+        {/* Hiển thị giá tiền */}
+        {state.isShowCost && (
+          <Costs
+            map={map}
+            handleBackToMap={handleBackToMap}
+            distance={distance}
+            duration={duration}
+            handleFindDrivers={handleFindDrivers}
+          />
+        )}
 
-          <div className="flex flex-col items-center gap-1 absolute top-7 left-[12px]">
-            <FaMapMarkerAlt size={'20px'} className="text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]" onClick={() => handleFocus(originRef)} />
+        <div className="flex flex-col items-center gap-1 absolute top-7 left-[12px]">
+          <FaMapMarkerAlt
+            size={'20px'}
+            className="text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]"
+            onClick={() => handleFocus(originRef)}
+          />
 
-            {state.isSearch && (
-              <div className="flex flex-col gap-1">
-                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-              </div>
-            )}
+          {/* 3 cái nút màu xanh dương */}
+          {state.isSearch && <ThreeDots />}
 
-            {state.isSearch && <FaCircle size={'15px'} className="text-white border-black border-[1.5px] mt-[2px] rounded-full hover:text-[#00B14F] transition-all cursor-pointer" onClick={() => handleFocus(destiantionRef)} />}
+          {/* Nút address màu đỏ để focus */}
+          {state.isSearch && (
+            <FaCircle
+              size={'15px'}
+              className="text-white border-black border-[1.5px] mt-[2px] rounded-full hover:text-[#00B14F] transition-all cursor-pointer"
+              onClick={() => handleFocus(destiantionRef)}
+            />
+          )}
+        </div>
+
+        {/* Nút Reverse màu đỏ */}
+        {state.isSearch && (
+          <div
+            className="flex flex-col items-center gap-1 absolute top-16 right-[12px]"
+            onClick={handleReverseRoad}>
+            <FaExchangeAlt
+              size={'20px'}
+              className="rotate-90 text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]"
+            />
           </div>
-          <div className="flex flex-col items-center gap-1 absolute top-16 right-[12px]" onClick={handleReverseRoad}>
-            <FaExchangeAlt size={'20px'} className="rotate-90 text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]" />
-          </div>
-        </Flex>
-      }
+        )}
+      </Flex>
     </Flex>
   );
 }
