@@ -6,9 +6,10 @@ const initialState = {
   distance: '',
   duration: '',
   directionsResponse: null,
-  transportationMode: '',
+  transportationMode: 'DRIVING',
   isSearch: false,
   cost: 0,
+  parsedAdress: {},
 };
 
 const mapSlice = createSlice({
@@ -33,8 +34,11 @@ const mapSlice = createSlice({
     setCost: (state, action) => {
       state.cost = action.payload;
     },
+    setParsedAdress: (state, action) => {
+      state.parsedAdress = { ...state.parsedAdress, ...action.payload };
+    },
   },
 });
 
-export const { setOrigin, setDestination, setDistance, setDuration, setTransportationMode, setCost } = mapSlice.actions;
+export const { setOrigin, setDestination, setDistance, setDuration, setTransportationMode, setCost, setParsedAdress } = mapSlice.actions;
 export default mapSlice.reducer;
