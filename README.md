@@ -14,7 +14,7 @@ NPM, YARN or other package management
 In case you do not have install vite yet: `npm create vite@latest`
 -----------
 Team size: 4
-- Hoàng Nhật Minh
+- Hoàng Nhật Minh (Lead)
 - Nguyễn Đức An
 - Huỳnh Quốc Bảo
 - Khang Nhật
