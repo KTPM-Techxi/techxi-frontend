@@ -40,7 +40,7 @@ export let data = [
     pickUpTime: formatDate(new Date())
   }
 ];
-for (let i = 5; i < 20; i++) {
+for (let i = 4; i < 20; i++) {
   data.push({
     key: `${i + 1}`,
     name: faker.internet.displayName(),
@@ -48,7 +48,7 @@ for (let i = 5; i < 20; i++) {
     curAddress: faker.location.streetAddress(),
     desAddress: faker.location.streetAddress(),
     tags: ['driver assigned'],
-    pickUpTime: formatDate(new Date())
+    pickUpTime: formatDate(new Date()),
   });
 }
 export const columns = [
@@ -56,27 +56,27 @@ export const columns = [
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-    render: (text) => <a>{text}</a>
+    render: (text) => <a>{text}</a>,
   },
   {
     title: 'Phone Number',
     dataIndex: 'phoneNumber',
-    key: 'phoneNumber'
+    key: 'phoneNumber',
   },
   {
     title: 'Current Address',
     dataIndex: 'curAddress',
-    key: 'curAddress'
+    key: 'curAddress',
   },
   {
     title: 'Destination Address',
     dataIndex: 'desAddress',
-    key: 'desAddress'
+    key: 'desAddress',
   },
   {
     title: 'Time',
     dataIndex: 'pickUpTime',
-    key: 'time'
+    key: 'time',
   },
   {
     title: 'Tags',
@@ -92,16 +92,16 @@ export const columns = [
           );
         })}
       </span>
-    )
+    ),
   },
   {
     title: 'Action',
     key: 'action',
     render: (_, record) => (
       <Space size="middle">
-        <a>More details </a>
+        <a onClick={() => console.log(record)}>More details </a>
         <a>Delete</a>
       </Space>
-    )
-  }
+    ),
+  },
 ];

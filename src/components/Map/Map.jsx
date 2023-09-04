@@ -177,11 +177,11 @@ function Map() {
     // }
     const { name, phoneNumber, timeToPick, vehicleType, destinationStore, originStore, transportationModeStore } = currentUserInfor;
     const data = {
-      callCenterAgentId: 'AnIDAgent',
-      driverID: 'MinhDriver',
-      customerID: name,
-      pickupTime: timeToPick,
-      pickupLocation: {
+      agent_id: 'AnIDAgent',
+      driver_id: 'MinhDriver',
+      customer_id: name,
+      pickup_time: timeToPick,
+      pickup_location: {
         latitude: parsedAddress.originLat,
         longtitude: parsedAddress.originlng,
       },
@@ -189,10 +189,10 @@ function Map() {
         latitude: parsedAddress.destinationLat,
         longtitude: parsedAddress.destinationlng,
       },
-      timeCompletion: durationStore,
-      scheduledTime: durationStore,
-      totalDistance: distanceStore,
-      totalPrice: costStore,
+      time_completion: durationStore,
+      scheduled_time: durationStore,
+      total_distance: distanceStore,
+      total_price: costStore,
     };
     console.log('🚀 ~ file: Map.jsx:170 ~ handleFindDrivers ~ data:', data);
     sendBookingRequest(data);
