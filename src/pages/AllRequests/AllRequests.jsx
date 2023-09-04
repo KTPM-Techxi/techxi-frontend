@@ -14,8 +14,9 @@ const AllRequests = () => {
   const [isAddNew, setIsAddNew] = useState(false);
 
   const getAllRequests = async () => {
-    const res = await axios.get(`/api/v1/callcenter/bookings/details/booking_id=${"'1'"}`);
+    const res = await axios.get(`/api/v1/callcenter/bookings/filter`);
     console.log('res', res);
+    return res.data;
   };
 
   useEffect(() => {
