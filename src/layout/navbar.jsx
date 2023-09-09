@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Navbar, Typography } from '@material-tailwind/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExternalLinkAlt, faList, faStar, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faChartColumn, faExternalLinkAlt, faList, faStar, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutSuccess } from '../app/reducers/authSlice';
@@ -31,9 +31,9 @@ function NavList({ handleLogout }) {
         </Link>
       </Typography>
       <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
-        <a href="#" className="flex items-center hover:text-[#00B14F] text-black">
-          <FontAwesomeIcon icon={faStar} className="mr-1" />
-          Ratings
+        <a href="/statistics" className="flex items-center hover:text-[#00B14F] text-black">
+          <FontAwesomeIcon icon={faChartColumn} className="mr-1" />
+          Statistics
         </a>
       </Typography>
       <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
