@@ -59,7 +59,9 @@ export default function NavigationBar() {
   async function handleLogout(e) {
     e.preventDefault();
     try {
-      await axios.post('/users/logout');
+      await axios.post('/users/logout', {
+        withCredentials: true,
+      });
       localStorage.removeItem('user');
       dispatch(logoutSuccess());
       navigate('/');

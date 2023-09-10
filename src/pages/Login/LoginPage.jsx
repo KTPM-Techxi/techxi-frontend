@@ -22,8 +22,10 @@ const LoginPage = () => {
   async function handleLogin(data) {
     console.log(data);
     try {
-      const response = await axios.post('/users/login', data);
-      console.log(response);
+      const response = await axios.post('/users/login', data, {
+        withCredentials: true,
+      });
+      console.log('Login response', response);
       if (response.status === 200) {
         dispatch(loginSuccess(response.data));
         localStorage.setItem('user', JSON.stringify(response.data));

@@ -14,7 +14,9 @@ const AllRequests = () => {
   const [isAddNew, setIsAddNew] = useState(false);
 
   const getAllRequests = async () => {
-    const res = await axios.get(`/api/v1/callcenter/bookings/filter`);
+    const res = await axios.get(`/api/v1/callcenter/bookings/filter`, {
+      withCredentials: true,
+    });
     console.log('res', res);
     return res.data;
   };

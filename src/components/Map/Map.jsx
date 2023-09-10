@@ -82,6 +82,7 @@ function Map() {
     setDirectionsResponse(results);
     setDistance(results.routes[0].legs[0].distance.text);
     setDuration(results.routes[0].legs[0].duration.text);
+    dispatchAll();
   }
 
   function clearRoute() {
@@ -145,6 +146,15 @@ function Map() {
     }
     await calculateRoute();
   }
+  const dispatchAll = () => {
+    dispatch(setCost(calCulateFees(+distance.split('')[0], +duration.split('')[0], 100000, 100000, 10000)));
+    dispatch(setOrigin(destiantionRef.current.value));
+    dispatch(setDestination(originRef.current.value));
+    dispatch(setOrigin(originRef.current.value));
+    dispatch(setDestination(destiantionRef.current.value));
+    dispatch(setDistanceStore(distance));
+    dispatch(setDurationStore(duration));
+  };
   function handleFindDrivers() {
     // TODO: Find drivers
     console.log('handleFindDrivers currentUserInfor', currentUserInfor);
@@ -175,11 +185,12 @@ function Map() {
     //     "transportationModeStore": "DRIVING",
     //     "costStore": 710000
     // }
-    const { name, phoneNumber, timeToPick, vehicleType, destinationStore, originStore, transportationModeStore } = currentUserInfor;
+    const { name, phoneNumber, timeToPick, vehicleType } = currentUserInfor;
     const data = {
-      agent_id: 'AnIDAgent',
-      driver_id: 'MinhDriver',
-      customer_id: name,
+      // agent_id: 'AnIDAgent',
+      driver_vehicle_type: transportationModeStore,
+      customer_name: name,
+      customer_phone_number: phoneNumber,
       pickup_time: timeToPick,
       pickup_location: {
         latitude: parsedAddress.originLat,
@@ -191,6 +202,7 @@ function Map() {
       },
       time_completion: durationStore,
       scheduled_time: durationStore,
+
       total_distance: distanceStore,
       total_price: costStore,
     };
@@ -198,7 +210,9 @@ function Map() {
     sendBookingRequest(data);
   }
   const sendBookingRequest = async (data) => {
-    const response = await axios.post('/api/v1/callcenter/bookings/create', data);
+    const response = await axios.post('/api/v1/callcenter/bookings/create', data, {
+      withCredentials: true,
+    });
     console.log('🚀 ~ sendBookingRequest ~ response:', response);
   };
   useEffect(() => {
