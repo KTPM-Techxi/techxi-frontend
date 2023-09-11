@@ -1,12 +1,13 @@
-import { HashRouter as Router, Route, Routes } from "react-router-dom"
-import LoginPage from "./pages/Login/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import ErrorPage from "./pages/ErrorPage";
-import Root from "./routes/RootPage";
-import RequestsPage from "./pages/RequestsPage";
-import Layout from "./layout/layout";
-import { HomePage } from "./pages/HomePage";
-import AllRequests from "./pages/AllRequests/AllRequests";
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
+import LoginPage from './pages/Login/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import ErrorPage from './pages/ErrorPage';
+import Root from './routes/RootPage';
+import RequestsPage from './pages/RequestsPage';
+import Layout from './layout/layout';
+import { HomePage } from './pages/HomePage';
+import StatPage from './pages/StatPage';
+import AllRequests from './pages/AllRequests/AllRequests';
 import TestPage from './pages/TestPage';
 
 import axios from 'axios';
@@ -51,6 +52,7 @@ function App() {
         <Route path="/request" element={<RequestsPage />} />
         <Route path="/userlist" element={<UserList />} />
         <Route path="/map" element={<Map />} />
+        <Route path="/statistics" element={<StatPage />} />
         {/* Handle Error page */}
         <Route path="*" element={<ErrorPage />} />
         {/* Test page to test component */}
