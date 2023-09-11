@@ -9,15 +9,17 @@ import CustomModal from '../../components/CustomModal';
 import { getTagColor, formatDate } from '../../../utils/helpers';
 import { columns, data } from '../../../data/fakeData';
 import axios from 'axios';
-const AllRequests = () => {
+const AllRequests = ({ events }) => {
   const [dataList, setDataList] = useState([]);
   const [isAddNew, setIsAddNew] = useState(false);
+  const [list, setList] = useState([]);
 
   const getAllRequests = async () => {
     const res = await axios.get(`/api/v1/callcenter/bookings/filter`, {
       withCredentials: true,
     });
-    console.log('res', res);
+    console.log('list from server', res?.bookings);
+    setList(res.data?.bookings);
     return res.data;
   };
 
@@ -26,6 +28,17 @@ const AllRequests = () => {
     setDataList(data);
     getAllRequests();
   }, []);
+
+  useEffect(() => {
+    console.log(events);
+    if (events[events.length - 1] != null || events[events.length - 1] != undefined) {
+      setList((old) => [...old, events[events.length - 1]]);
+    }
+  }, [events]);
+
+  useEffect(() => {
+    console.log('list when changed', list);
+  }, [list]);
 
   return (
     <div className=" mx-auto">
@@ -36,7 +49,7 @@ const AllRequests = () => {
           position: ['topLeft'],
           pageSize: 15,
         }}
-        dataSource={dataList}
+        dataSource={list}
         onRow={(record, rowIndex) => {
           return {
             onClick: (e) => {

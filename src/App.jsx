@@ -7,12 +7,12 @@ import RequestsPage from "./pages/RequestsPage";
 import Layout from "./layout/layout";
 import { HomePage } from "./pages/HomePage";
 import AllRequests from "./pages/AllRequests/AllRequests";
-import DateTimePicker from "./pages/TestPage";
+import TestPage from './pages/TestPage';
 
-import axios from 'axios'
-import { UserList } from "./pages/UserList";
-import InputUserInforForm from "./components/CallCenter/InputUserInforForm";
-import Map from "./components/Map/Map";
+import axios from 'axios';
+import { UserList } from './pages/UserList';
+import InputUserInforForm from './components/CallCenter/InputUserInforForm';
+import Map from './components/Map/Map';
 import { useEffect, useState } from 'react';
 import * as Realm from 'realm-web';
 axios.defaults.baseURL = 'http://localhost:8080';
@@ -31,10 +31,10 @@ function App() {
 
       // Connect to the database
       const mongodb = app.currentUser.mongoClient('mongodb-atlas');
-      const collection = mongodb.db('techxi').collection('bookings');
+      const bookingsCollections = mongodb.db('techxi').collection('bookings');
 
       // Everytime a change happens in the stream, add it to the list of events
-      for await (const change of collection.watch()) {
+      for await (const change of bookingsCollections.watch()) {
         setEvents((events) => [...events, change]);
       }
     };
@@ -45,16 +45,16 @@ function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage user={user} setUser={setUser} evetns={events} setEvents={setEvents} />} />
+        <Route path="/login" element={<LoginPage user={user} setUser={setUser} events={events} setEvents={setEvents} />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/requests" element={<AllRequests />} />
+        <Route path="/requests" element={<AllRequests events={events} />} />
         <Route path="/request" element={<RequestsPage />} />
         <Route path="/userlist" element={<UserList />} />
         <Route path="/map" element={<Map />} />
         {/* Handle Error page */}
         <Route path="*" element={<ErrorPage />} />
         {/* Test page to test component */}
-        <Route path="/test" element={<DateTimePicker />} />
+        <Route path="/test" element={<TestPage events={events} />} />
       </Routes>
     </Layout>
   );

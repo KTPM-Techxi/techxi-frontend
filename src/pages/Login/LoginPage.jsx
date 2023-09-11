@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginSuccess, loginFailed } from '../../app/reducers/authSlice';
 import axios from 'axios';
 
-const LoginPage = ({ user, setUser, evetns, setEvents }) => {
+const LoginPage = ({ user, setUser, events, setEvents }) => {
   const userRef = useRef();
   const errorRef = useRef();
 
@@ -55,8 +55,8 @@ const LoginPage = ({ user, setUser, evetns, setEvents }) => {
 
   useEffect(() => {
     console.log('Login page', user);
-    console.log('Login evetns', evetns);
-  }, [user, evetns]);
+    console.log('Login events', events);
+  }, [user, events]);
 
   useEffect(() => {
     if (isUserLoggedIn) {
@@ -115,7 +115,7 @@ const LoginPage = ({ user, setUser, evetns, setEvents }) => {
             </Link>
           </p>
           <p className="mt-10 text-center text-sm text-gray-500">
-            {evetns.map((event, i) => {
+            {events.map((event, i) => {
               const { fullDocument } = event;
               return (
                 <>

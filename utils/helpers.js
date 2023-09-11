@@ -10,6 +10,8 @@ export function formatDate(date) {
 export function getTagColor(tag) {
   const color = {
     driverAssigned: '#ffbe0b',
+    PENDING: 'black',
+    RECEIVED: '#fb5607',
     driverArrived: '#fb5607',
     driverPickedUp: '#ff006e',
     driverArrivedAtDestination: '#8338ec',
@@ -32,6 +34,10 @@ export function getTagColor(tag) {
       return color.driverCompleteTheDrive || color.defaultColor;
     case 'driver declined to pick':
       return color.driverDeclinedToPick || color.defaultColor;
+    case 'PENDING':
+      return color.PENDING || color.defaultColor;
+    case 'RECEIVED':
+      return color.RECEIVED || color.defaultColor;
     default:
       return color.defaultColor;
   }

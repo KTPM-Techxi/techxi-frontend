@@ -1,6 +1,7 @@
 import { Space, Tag } from 'antd';
 import { formatDate, getTagColor } from '../utils/helpers';
 import { faker } from '@faker-js/faker';
+import dayjs from 'dayjs';
 
 export let data = [
   {
@@ -10,7 +11,7 @@ export let data = [
     curAddress: 'New York No. 1 Lake Park',
     desAddress: 'London No. 1 Lake Park',
     tags: ['driver assigned'],
-    pickUpTime: formatDate(new Date())
+    pickUpTime: formatDate(new Date()),
   },
   {
     key: '2',
@@ -19,7 +20,7 @@ export let data = [
     curAddress: 'London No. 1 Lake Park',
     desAddress: 'New York No. 1 Lake Park',
     tags: ['driver assigned'],
-    pickUpTime: formatDate(new Date())
+    pickUpTime: formatDate(new Date()),
   },
   {
     key: '3',
@@ -28,7 +29,7 @@ export let data = [
     curAddress: 'Sydney No. 1 Lake Park',
     desAddress: 'New York No. 1 Lake Park',
     tags: ['driver arrived'],
-    pickUpTime: formatDate(new Date())
+    pickUpTime: formatDate(new Date()),
   },
   {
     key: '4',
@@ -37,8 +38,8 @@ export let data = [
     curAddress: 'Sydney No. 1 Lake Park',
     desAddress: 'New York No. 1 Lake Park',
     tags: ['driver picked up'],
-    pickUpTime: formatDate(new Date())
-  }
+    pickUpTime: formatDate(new Date()),
+  },
 ];
 for (let i = 4; i < 20; i++) {
   data.push({
@@ -53,9 +54,9 @@ for (let i = 4; i < 20; i++) {
 }
 export const columns = [
   {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
+    title: 'Customer ID',
+    dataIndex: 'customerId',
+    key: 'customerId',
     render: (text) => <a>{text}</a>,
   },
   {
@@ -64,35 +65,47 @@ export const columns = [
     key: 'phoneNumber',
   },
   {
-    title: 'Current Address',
-    dataIndex: 'curAddress',
-    key: 'curAddress',
+    title: 'Current Address (lat | long)',
+    dataIndex: 'pickupAddress',
+    key: 'pickupAddress',
+    render: (text) => (
+      <>
+        <span>{text}</span>
+      </>
+    ),
   },
   {
     title: 'Destination Address',
-    dataIndex: 'desAddress',
-    key: 'desAddress',
+    dataIndex: 'destinationAddress',
+    key: 'destinationAddress',
+    render: (text) => (
+      <>
+        <span>{text}</span>
+      </>
+    ),
   },
   {
     title: 'Time',
-    dataIndex: 'pickUpTime',
-    key: 'time',
+    dataIndex: 'pickupTime',
+    key: 'pickupTime',
+    render: (text) => <span>{dayjs(text).format('DD-MM-YYYY HH:mm')}</span>,
   },
   {
     title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
-    render: (tags) => (
-      <span>
-        {tags.map((tag) => {
-          return (
-            <Tag color={getTagColor(tag)} key={tag}>
-              {tag.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </span>
-    ),
+    key: 'status',
+    dataIndex: 'status',
+    // render: (tags) => (
+    //   <span>
+    //     {tags.map((tag) => {
+    //       return (
+    //         <Tag color={getTagColor(tag)} key={tag}>
+    //           {tag.toUpperCase()}
+    //         </Tag>
+    //       );
+    //     })}
+    //   </span>
+    // ),
+    render: (tag) => <Tag color={getTagColor(tag)}>{tag}</Tag>,
   },
   {
     title: 'Action',
