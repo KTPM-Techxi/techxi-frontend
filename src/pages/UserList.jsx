@@ -10,11 +10,10 @@ export const UserList = () => {
   useEffect(() => {
     const getAllUsers = async () => {
       try {
-        const res = await axios.get(`/api/v1/callcenter/users/filter`, {
-          withCredentials: true,
+        const res = await axios.get(`/api/v1/callcenter/users/filter?current_page=1&page_size=10`, {
         });
-        console.log('list from server', res?.bookings);
-        setList(res.data?.bookings);
+        console.log('list from server', res?.users);
+        setList(res.data?.users);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
