@@ -88,7 +88,7 @@ const AllRequests = ({ events }) => {
   }, [list]);
 
   return (
-    <div className=" mx-auto">
+    <div className="w-4/5 mx-auto mt-4">
       <Table
         className=" overflow-y-auto overflow-x-auto shadow-md sm:rounded-lg "
         columns={columns}

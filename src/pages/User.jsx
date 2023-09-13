@@ -308,7 +308,7 @@ const User = ({ user,events }) => {
   const rating = {
     rating: selectedStar,
     message: review,
-    driver_id: driverId
+    driver_id: '64d0d3be86ad5d4d6d1f5944'
   };
 
   const sendRating = async (rating) => {

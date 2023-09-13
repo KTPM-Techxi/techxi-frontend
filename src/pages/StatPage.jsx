@@ -17,6 +17,7 @@ import { Line, Pie, Bar } from 'react-chartjs-2';
 import { faker } from '@faker-js/faker';
 import axios from 'axios';
 import RandomImage from '../components/randomImage';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 ChartJS.register(
   CategoryScale,
@@ -65,6 +66,8 @@ export const StackOptions = {
 };
 
 const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+
+
 
 export const data = {
   labels,
@@ -134,6 +137,7 @@ function StarRating({ numberOfStars }) {
 }
 
 const StatPage = () => {
+  const [data1, setData1] = useState('');
   const [reqList, setReqList] = useState([]);
   const [userList, setUserList] = useState([]);
   const [ratingList, setRatingList] = useState([]);
@@ -158,6 +162,9 @@ const StatPage = () => {
     getAllRequests();
     getAllRating();
   }, []);
+  const totalSum = reqList.reduce((accumulator, currentItem) => {
+    return accumulator + currentItem.totalPrice;
+  }, 0);
   return (
     <div className="w-4/5 mx-auto p-4 flex">
       <div className="w-2/3 mx-2 shadow-md">
@@ -166,7 +173,7 @@ const StatPage = () => {
                 <img className="p-2 ml-2 aspect-square" src="https://cdn-icons-png.flaticon.com/512/8922/8922324.png" alt="revenue" />
                 <div className='my-auto ml-4'>
                     <div className='font-bold text-sm'>Total Revenue</div>
-                    <div className='text-green-600'>$125640</div>
+                    <div className='text-green-600'>{totalSum} đ</div>
                 </div>
             </div>
             <div className='w-1/3 h-16 bg-white flex rounded-xl shadow-md mx-3'>
@@ -205,7 +212,7 @@ const StatPage = () => {
                   Reviews and Ratings
                 </div>
                 <div className='text-sm text-green-500'>
-                  See All
+                  <FontAwesomeIcon/>
                 </div>
             </div>
         </div>

@@ -160,22 +160,17 @@ const Driver = ({ events }) => {
       <div className="">
         {id && (
           <>
-            <div className="">
+            <div className="mx-auto">
               There is a new booking with ID <span className="font-bold">{id || 'null'}</span> on {/* {currB} */}
               <span className="font-bold">{dayjs(state?.pickupTime).format('DD-MM-YYYY hh:mm')}</span>
             </div>
-            <button className="bg-red-200 w-full text-red-50" onClick={() => updateBooking(id, { status: 'COMPLETED', total_distance: '12m' })}>
-              Arrive at pickup location
-            </button>
-            <Link to={`https://www.google.com/maps/dir/${state?.pickupLocation?.latitude},${state?.pickupLocation?.longitude}/${state?.destination?.latitude},${state?.destination?.longitude}/`} className="bg-red-200 w-full text-red-50">
-              Navigate to map
-            </Link>
+            
           </>
         )}
 
         {!state?.isOpen && <SkeletonLoading text={'Looking for customer'} />}
         {state?.isOpen && (
-          <div className="rounded-md bg-[#d4f8e4] p-4 mx-16 my-10  ">
+          <div className="rounded-md bg-[#d4f8e4] p-4 mx-auto my-10 w-2/3 border-2 shadow-lg">
             <p className="font-bold text-xl">Tech Xi Driver 🔥 (BookingID: {state?.bookingId})</p>
             <div className="flex justify-between mt-2 mb-4">
               <div className="ava">
@@ -186,15 +181,15 @@ const Driver = ({ events }) => {
                 <div className="book text-[#00B14F] mb-2">{state?.status}</div>
               </div>
               <div className="flex flex-col gap-2 money km">
-                <div className="money font-bold text-2xl">{state?.totalPrice}</div>
+                <div className="money font-bold text-2xl">${state?.totalPrice}</div>
 
                 <div className="km text-xl text-gray-">{state?.distance || '5.9 km'}</div>
               </div>
             </div>
-            <div className="flex flex-col mx-5 relative">
+            <div className="flex flex-col mx-5 relative border-2 border-slate-100 bg-white rounded-xl p-4 mb-4">
               <div className="pickup up border-b border-gray-400 py-4">
                 <p className="text-gray-400 text-[20px]">Pickup point</p>
-                <p className="text-gray-900 text-[22px] font-semibold text-ellipsis overflow-hidden truncate  ">{state?.pickupAddress || 'Đại học khoa học tự nhiên'}</p>
+                <p className="text-gray-900 text-[22px] font-semibold text-ellipsis overflow-hidden truncate  text-sm">{state?.pickupAddress || 'Đại học khoa học tự nhiên'}</p>
               </div>
               <div className="pickup below py-4">
                 <p className="text-gray-400 text-[20px]">Pickout point</p>
@@ -216,8 +211,8 @@ const Driver = ({ events }) => {
                 <FaCircle size={'15px'} className="text-white border-black border-[1.5px] mt-[12px] rounded-full hover:text-[#00B14F] transition-all cursor-pointer" />
               </div>
             </div>
-            <div className="btns flex gap-x-2">
-              <button onClick={() => updateBooking(id, { status: 'REJECTED' }, 'DECLINE')} className="flex-1 text-center p-4 rounded-xl text-[20px] bg-white border-[2px] border-[#00155F] cursor-pointer mx-2 active:scale-[.95] transition-all">
+            <div className="btns mb-2 flex gap-x-2">
+              <button onClick={() => updateBooking(id, { status: 'REJECTED' }, 'DECLINE')} className="w-1/3 flex-1 text-center p-4 rounded-xl text-[20px] bg-white border-[2px] border-[#00155F] cursor-pointer mx-2 active:scale-[.95] transition-all">
                 Decline
               </button>
               <button
@@ -227,15 +222,15 @@ const Driver = ({ events }) => {
                 Accept
               </button>
             </div>
-            <div className="btns flex gap-x-2">
+            <div className="btns mb-2 flex gap-x-2">
               <button onClick={() => updateBooking(id, { status: 'GOING' })} className="flex-1 text-center p-4 rounded-xl text-[20px] bg-white border-[2px] border-[#00155F] cursor-pointer mx-2 active:scale-[.95] transition-all">
-                GOING
+                Pick Up
               </button>
               <button
                 onClick={() => handleFinish()}
                 className="flex-1 text-center p-4 rounded-xl text-white
              bg-[#00B14F] cursor-pointer mx-2 active:scale-[.95] transition-all text-[20px]">
-                FINISH TRIP
+                Complete
               </button>
             </div>
             <div className="btns flex gap-x-2">
