@@ -56,7 +56,7 @@ function App() {
         <Route path="/statistics" element={<StatPage />} />
 
         <Route path="/driver" element={<Driver events={events} />} />
-        <Route path="/user" element={<User events={events} />} />
+        <Route path="/user" element={<User user={user} events={events} />} />
         {/* Handle Error page */}
         <Route path="*" element={<ErrorPage />} />
         {/* Test page to test component */}

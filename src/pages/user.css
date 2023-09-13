@@ -1,0 +1,26 @@
+.searching-dots {
+    display: flex;
+    align-items: center;
+  }
+  
+  .dot {
+    width: 5px;
+    height: 5px;
+    background-color: #000;
+    border-radius: 50%;
+    margin: 0 4px;
+    opacity: 0;
+    animation: dot-animation 1s infinite;
+  }
+  
+  @keyframes dot-animation {
+    0%, 100% {
+      opacity: 0;
+    }
+    25% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }

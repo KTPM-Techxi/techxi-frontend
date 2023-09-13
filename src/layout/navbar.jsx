@@ -18,25 +18,25 @@ function NavList({ handleLogout }) {
           Call Center
         </Link>
       </div>
-      <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
+      <Typography as="li" variant="small" color="blue-gray" className="p-1 my-auto font-medium">
         <Link to={'/requests'} className="flex items-center hover:text-[#00B14F] text-black">
           <FontAwesomeIcon icon={faList} className="mr-1" />
           Request List
         </Link>
       </Typography>
-      <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
+      <Typography as="li" variant="small" color="blue-gray" className="p-1 my-auto font-medium">
         <Link to={'/userlist'} href="#" className="flex items-center hover:text-[#00B14F] text-black">
           <FontAwesomeIcon icon={faUser} className="mr-1" />
           Users Management
         </Link>
       </Typography>
-      <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
+      <Typography as="li" variant="small" color="blue-gray" className="p-1 my-auto font-medium">
         <a href="/statistics" className="flex items-center hover:text-[#00B14F] text-black">
           <FontAwesomeIcon icon={faChartColumn} className="mr-1" />
           Statistics
         </a>
       </Typography>
-      <Typography as="li" variant="small" color="blue-gray" className="p-1 font-medium">
+      <Typography as="li" variant="small" color="blue-gray" className="p-1 my-auto font-medium">
         {!isUserLoggedIn ? (
           <Link to={'/login'} className="flex items-center hover:text-[#00B14F] text-black">
             <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
