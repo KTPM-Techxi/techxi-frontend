@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginSuccess, loginFailed } from '../../app/reducers/authSlice';
 import axios from 'axios';
 
-const LoginPage = () => {
+const LoginPage = ({ user, setUser, events, setEvents }) => {
   const userRef = useRef();
   const errorRef = useRef();
 
@@ -16,14 +16,16 @@ const LoginPage = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm();
 
   async function handleLogin(data) {
     console.log(data);
     try {
-      const response = await axios.post('/users/login', data);
-      console.log(response);
+      const response = await axios.post('/users/login', data, {
+        withCredentials: true,
+      });
+      console.log('Login response', response);
       if (response.status === 200) {
         dispatch(loginSuccess(response.data));
         localStorage.setItem('user', JSON.stringify(response.data));
@@ -50,6 +52,11 @@ const LoginPage = () => {
       dispatch(loginSuccess(userData));
     }
   }, []);
+
+  useEffect(() => {
+    console.log('Login page', user);
+    console.log('Login events', events);
+  }, [user, events]);
 
   useEffect(() => {
     if (isUserLoggedIn) {
@@ -105,6 +112,25 @@ const LoginPage = () => {
             Not a member yet ?{' '}
             <Link to="/register" className="font-semibold leading-6 text-[#00B14F] hover:text-[#00B14F]">
               Start your drive now !
+            </Link>
+          </p>
+          <p className="mt-10 text-center text-sm text-gray-500">
+            {events.map((event, i) => {
+              const { fullDocument } = event;
+              return (
+                <>
+                  <p key={i}>{fullDocument.call_center_agents_id}</p>
+                  <p key={i}>{fullDocument.customer_id}</p>
+                  <p key={i}>{fullDocument.destination.latitude}</p>
+                  <p key={i}>{fullDocument.destination_address}</p>
+                  <p key={i}>{fullDocument.driver_id}</p>
+                  <p key={i}>{fullDocument.pickup_address}</p>
+                </>
+              );
+            })}
+
+            <Link to="/register" className="font-semibold leading-6 text-[#00B14F] hover:text-[#00B14F]">
+              Event
             </Link>
           </p>
         </div>

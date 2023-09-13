@@ -1,10 +1,29 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCab, faCar, faDriversLicense, faEye, faGear, faList, faMotorcycle, faPen, faStar, faTrash, faUserGroup } from '@fortawesome/free-solid-svg-icons';
-
+import axios from 'axios';
+import { useEffect } from 'react';
 export const UserList = () => {
     const [selectedOption, setSelectedOption] = useState('driver'); // Default selected option is 'customer'
+    const [list, setList] = useState([]);
 
+  useEffect(() => {
+    const getAllUsers = async () => {
+      try {
+        const res = await axios.get(`/api/v1/callcenter/users/filter?roles=admin&current_page=1&page_size=10`, {
+        });
+        console.log(res.data.users);
+        setList(res.data?.users);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    getAllUsers(); // Call the function when the component mounts
+
+    // Optionally, you can also set the selected option here or in another useEffect
+
+  }, []); // Empty dependency array ensures this effect runs once
     const handleOptionChange = (option) => {
         setSelectedOption(option);
     };

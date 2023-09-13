@@ -30,7 +30,9 @@ const RegisterPage = () => {
   async function handleRegister(data) {
     console.log(data);
     try {
-      const response = await axios.post('/users/register', data);
+      const response = await axios.post('/users/register', data, {
+        withCredentials: true,
+      });
       console.log(response);
       if (response.status === 200) {
         alert('Register successfully');

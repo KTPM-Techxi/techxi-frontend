@@ -8,27 +8,47 @@ import Geocode from 'react-geocode';
 import { useEffect, useRef, useState } from 'react';
 import { Skeleton } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCost, setDestination, setOrigin, setTransportationMode as setTransportationModeStore, setDistance as setDistanceStore, setDuration as setDurationStore, setParsedAdress } from './mapSlice';
-import SkeletonLoading from '../SkeletonLoading';
-import ToggleBtn from '../ToggleBtn';
+import { setCost, setDestination, setOrigin, setTransportationMode as setTransportationModeStore, setDistance as setDistanceStore, setDuration as setDurationStore, setParsedAdress } from '../components/Map/mapSlice.js';
 import { useLocation } from 'react-router-dom';
-import { calCulateFees } from '../../../utils/helpers';
 import Numeral from 'react-numeral';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import ThreeDots from './components/ThreeDots';
-import DestinationSearchBox from './components/DestinationSearchBox';
-import Costs from './components/Costs';
-import FinalCalculation from './components/FinalCalculation';
-import OriginSearchBox from './components/OriginSearchBox';
+import ThreeDots from '../components/Map/components/ThreeDots';
+import DestinationSearchBox from '../components/Map/components/DestinationSearchBox';
+import Costs from '../components/Map/components/Costs';
+import FinalCalculation from '../components/Map/components/FinalCalculation';
+import OriginSearchBox from '../components/Map/components/OriginSearchBox';
+import SkeletonLoading from '../components/SkeletonLoading';
+import ToggleBtn from '../components/ToggleBtn';
+import { calCulateFees } from '../../utils/helpers';
+import './user.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBook, faCar} from '@fortawesome/free-solid-svg-icons';
+
 const center = { lat: 10.762831, lng: 106.682476 };
 
 function handleBackToMap(map, center) {
   map.panTo(center);
   map.setZoom(18);
 }
+const User = ({ user,events }) => {
+  const [isCentreModalOpen, setIsCentreModalOpen] = useState(false);
+  const currentUser = useSelector((state) => state.auth.storedUser);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openCentreModal = () => {
+    setIsCentreModalOpen(true);
+    setIsModalOpen(false);
+  };
+  const closeCentreModal = () => {
+    setIsCentreModalOpen(false);
+  };
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
-function Map({ role = {} }) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries: ['places', 'geometry', 'geocoding', 'marker', 'geocoding'],
@@ -196,14 +216,13 @@ function Map({ role = {} }) {
         latitude: parsedAddress.originLat,
         longtitude: parsedAddress.originlng,
       },
-      pickup_address: originStore,
-      destination_address: destinationStore,
       destination: {
         latitude: parsedAddress.destinationLat,
         longtitude: parsedAddress.destinationlng,
       },
       time_completion: durationStore,
       scheduled_time: durationStore,
+
       total_distance: distanceStore,
       total_price: costStore,
     };
@@ -235,6 +254,16 @@ function Map({ role = {} }) {
     console.log('useEffect', UserFormInputInfor, 'and', currentUserInfor);
   }, [currentUserInfor, UserFormInputInfor]);
 
+
+  const [status, setStatus] = useState('');
+   useEffect(() => {
+    console.log('🚀 events:', events);
+    console.log('user:',currentUser.user_id);
+    if (currentUser.user_id === events[0]?.fullDocument?.customer_id)
+    {
+      setStatus(events[0]?.fullDocument?.status);
+    }
+  }, [events,currentUser]);
   if (!isLoaded) {
     return <SkeletonLoading />;
   }
@@ -259,9 +288,9 @@ function Map({ role = {} }) {
         </GoogleMap>
       </Box>
       {/* Nút hiển thị bật tắt Modal */}
-      <ToggleBtn isModalOpen={state.isModalOpen} setState={setState} className="absolute z-[50] left-[7px] -top-[15px] " text={''} />
-
-      <Flex flexDirection="column" p={4} px={12} borderRadius="lg" m={4} mt={100} bgColor="white" shadow="base" minW={'60%'} zIndex="99" gap={4} className="relative transition-all" opacity={state.isModalOpen ? '1' : '0'} visibility={state.isModalOpen ? 'visible' : 'hidden'}>
+      <button onClick={openModal} className="absolute z-[50] left-[5px] -top-[-60px] bg-white text-black border-2 rounded-xl font-semibold py-2 px-2" > <FontAwesomeIcon icon={faBook} className="mx-1"/> Book A Ride  </button>
+      <button onClick={openCentreModal} className="absolute z-[50] left-[5px] -top-[-110px]  bg-white text-black border-2 rounded-xl font-semibold px-2 py-2" > <FontAwesomeIcon icon={faCar} className="mx-1"/> Nearby Driver </button>
+      {isModalOpen && (<Flex flexDirection="column" p={4} px={12} borderRadius="lg" m={4} mt={20} bgColor="white" shadow="base" minW={'60%'} zIndex="99" gap={4} className="relative transition-all" opacity={state.isModalOpen ? '1' : '0'} visibility={state.isModalOpen ? 'visible' : 'hidden'}>
         {/* Hiển thị Search Box Số 1 */}
         <HStack spacing={4} justifyContent="space-between">
           <OriginSearchBox setState={setState} handleOriginPlaceChanged={handleOriginPlaceChanged} originRef={originRef} />
@@ -269,7 +298,7 @@ function Map({ role = {} }) {
         {/* Hiển thị Search Box số 2  */}
         <HStack spacing={4} mt={1} justifyContent="space-between">
           {state.isSearch && <DestinationSearchBox handleDestinationPlaceChanged={handleDestinationPlaceChanged} calculateRoute={calculateRoute} clearRoute={clearRoute} destiantionRef={destiantionRef} />}
-        </HStack>
+        </HStack> 
         {/* Hiển thị Distance, Duration và Loại Car Driving */}
         {/* Todo: Chọn Car Driving cho đúng */}
         <FinalCalculation map={map} distance={distance} duration={duration} handleBackToMap={handleBackToMap} />
@@ -292,9 +321,31 @@ function Map({ role = {} }) {
             <FaExchangeAlt size={'20px'} className="rotate-90 text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]" />
           </div>
         )}
-      </Flex>
+      </Flex>)}
+      {/* Second Modal */}
+      {isCentreModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white w-1/2 p-4 rounded-lg shadow-lg">
+            {/* Content of the second modal */}
+            <div className='flex'>
+              <h2 className="text-md font-semibold mb-4">We are looking for a nearby driver</h2>
+              <div className="searching-dots mb-2">
+                <span className="dot"></span>
+                <span className="dot"></span>
+                <span className="dot"></span>
+              </div>
+            </div>
+            
+            {/* Button to close the second modal */}
+            <button onClick={closeCentreModal} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+      
     </Flex>
   );
 }
 
-export default Map;
+export default User;
