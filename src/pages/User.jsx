@@ -208,6 +208,7 @@ const User = ({ user,events }) => {
     const { name, phoneNumber, timeToPick, vehicleType } = currentUserInfor;
     const data = {
       // agent_id: 'AnIDAgent',
+      customer_id: currentUser.user_id,
       driver_vehicle_type: transportationModeStore,
       customer_name: name,
       customer_phone_number: phoneNumber,
@@ -254,14 +255,19 @@ const User = ({ user,events }) => {
     console.log('useEffect', UserFormInputInfor, 'and', currentUserInfor);
   }, [currentUserInfor, UserFormInputInfor]);
 
-
+  const [driverId, setDriverID] = useState('');
   const [status, setStatus] = useState('');
+  const [selectedStar, setSelectedStar] = useState(null);
+
+  const handleStarClick = (star) => {
+    setSelectedStar(star);
+  };
    useEffect(() => {
     console.log('🚀 events:', events);
     console.log('user:',currentUser.user_id);
-    if (currentUser.user_id === events[0]?.fullDocument?.customer_id)
-    {
-      setStatus(events[0]?.fullDocument?.status);
+    if (currentUser.user_id === events[0]?.fullDocument?.customer_id) {
+      setStatus(events.slice(-1)[0]?.fullDocument?.status);
+      setDriverID(events.slice(-1)[0]?.fullDocument?.driver_id);
     }
   }, [events,currentUser]);
   if (!isLoaded) {
@@ -323,7 +329,7 @@ const User = ({ user,events }) => {
         )}
       </Flex>)}
       {/* Second Modal */}
-      {isCentreModalOpen && (
+      {isCentreModalOpen && status==='PENDING' && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white w-1/2 p-4 rounded-lg shadow-lg">
             {/* Content of the second modal */}
@@ -335,15 +341,79 @@ const User = ({ user,events }) => {
                 <span className="dot"></span>
               </div>
             </div>
-            
             {/* Button to close the second modal */}
-            <button onClick={closeCentreModal} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
-              Close
-            </button>
+            <div className='justify-between flex'>
+              <div></div>
+              <button onClick={closeCentreModal} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
-      
+       {isCentreModalOpen && status === 'RECEIVED' && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white w-1/2 p-4 rounded-lg shadow-lg">
+            {/* Content of the second modal */}
+            <div className='flex'>
+              <img className="w-10 h-10 rounded-full object-cover" src="https://flxt.tmsimg.com/assets/676946_v9_bb.jpg" alt="Jese image" /> 
+              <div className='mt-2 flex mx-2'><h2 className="text-md font-semibold mb-4">{driverId}</h2><h2 className='text-md ml-1'>is 10km Away</h2></div>
+              <div className="searching-dots ">
+                <span className="dot"></span>
+                <span className="dot"></span>
+                <span className="dot"></span>
+              </div>
+            </div>
+            {/* Button to close the second modal */}
+            <div className='justify-between flex'>
+              <div></div>
+              <button onClick={closeCentreModal} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
+                Close
+              </button>
+            </div>
+            
+          </div>
+        </div>
+      )}
+       {isCentreModalOpen && status === 'FINISHED' && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="bg-white w-1/2 p-4 rounded-lg shadow-lg">
+          {/* Content of the second modal */}
+          <div className='flex mx-auto'>
+            <h2 className="text-md font-semibold mx-auto">Thanks for your support</h2>
+          </div>
+          <div className='w-4/5 p-4 mx-auto'>
+            <input
+              type="text"
+              placeholder="Enter review here"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-400"
+              aria-rowspan={4}
+            />
+
+            {/* Five-Star Rating */}
+            <div className="flex mt-4">
+              <span className="text-md">Rating:</span>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  className={`text-3xl ml-2 cursor-pointer ${star <= selectedStar ? 'text-yellow-500' : 'text-gray-300'}`}
+                  onClick={() => handleStarClick(star)}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+          </div>
+          {/* Button to close the second modal */}
+          <div className='justify-between flex'>
+              <div></div>
+              <button onClick={closeCentreModal} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
+                Close
+              </button>
+            </div>
+        </div>
+      </div>
+      )}
     </Flex>
   );
 }

@@ -5,15 +5,20 @@ import axios from 'axios';
 import { useEffect } from 'react';
 export const UserList = () => {
     const [selectedOption, setSelectedOption] = useState('driver'); // Default selected option is 'customer'
-    const [list, setList] = useState([]);
+    const [driverList, setDriverList] = useState([]);
+    const [cusList, setCusList] = useState([]);
 
   useEffect(() => {
     const getAllUsers = async () => {
       try {
-        const res = await axios.get(`/api/v1/callcenter/users/filter?roles=admin&current_page=1&page_size=10`, {
+        const res = await axios.get(`/api/v1/callcenter/users/filter?roles=driver&current_page=1&page_size=20`, {
         });
         console.log(res.data.users);
-        setList(res.data?.users);
+        setDriverList(res.data?.users);
+        const res_ = await axios.get(`/api/v1/callcenter/users/filter?roles=customer&current_page=1&page_size=20`, {
+        });
+        console.log(res_.data.users);
+        setCusList(res_.data?.users);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -114,29 +119,6 @@ export const UserList = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-                                <th scope="row" className="flex px-6 py-2 justify-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    <img className="w-10 h-10 rounded-full object-cover" src="https://yt3.googleusercontent.com/-CFTJHU7fEWb7BYEb6Jh9gm1EpetvVGQqtof0Rbh-VQRIznYYKJxCaqv_9HeBcmJmIsp2vOO9JU=s900-c-k-c0x00ffffff-no-rj" alt="Jese image" />
-                                    <div className="px-2 py-2">Anns</div>
-                                </th>
-                                <td className="px-6 py-4 text-center">
-                                    0909990099
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                    <FontAwesomeIcon icon={faMotorcycle} className="text-[#00B12F]" /> Bike
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                    59SA123
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                    <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                    <a className=""><FontAwesomeIcon icon={faPen} className="text-lg text-[#00B17F] mr-10" /></a>
-                                    <a className=""><FontAwesomeIcon icon={faEye} className="text-lg text-[#00B17F] mr-10" /></a>
-                                    <a className=""><FontAwesomeIcon icon={faTrash} className="text-lg text-red-500" /></a>
-                                </td>
-                            </tr>
                             <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
                                 <th scope="row" className="flex px-6 py-2 justify-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     <img className="w-10 h-10 rounded-full object-cover" src="https://flxt.tmsimg.com/assets/676946_v9_bb.jpg" alt="Jese image" />
