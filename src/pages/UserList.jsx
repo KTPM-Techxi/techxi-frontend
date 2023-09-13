@@ -10,9 +10,9 @@ export const UserList = () => {
   useEffect(() => {
     const getAllUsers = async () => {
       try {
-        const res = await axios.get(`/api/v1/callcenter/users/filter?current_page=1&page_size=10`, {
+        const res = await axios.get(`/api/v1/callcenter/users/filter?roles=admin&current_page=1&page_size=10`, {
         });
-        console.log('list from server', res?.users);
+        console.log(res.data.users);
         setList(res.data?.users);
       } catch (error) {
         console.error('Error fetching data:', error);
