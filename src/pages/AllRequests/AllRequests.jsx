@@ -6,14 +6,14 @@ import { faker } from '@faker-js/faker';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import CustomModal from '../../components/CustomModal';
-import { getTagColor, formatDate } from '../../../utils/helpers';
+import { getTagColor, formatDate, generateMongoDBId } from '../../../utils/helpers';
 import { columns, data } from '../../../data/fakeData';
 import axios from 'axios';
 const AllRequests = ({ events }) => {
   const [dataList, setDataList] = useState([]);
   const [isAddNew, setIsAddNew] = useState(false);
   const [list, setList] = useState([]);
-
+  const [currentID, setCurrentID] = useState('');
   const getAllRequests = async () => {
     const res = await axios.get(`/api/v1/callcenter/bookings/filter`, {
       withCredentials: true,
@@ -22,7 +22,32 @@ const AllRequests = ({ events }) => {
     setList(res.data?.bookings);
     return res.data;
   };
-
+  const updateBooking = async (booking_id, driver_id, message) => {
+    const res = await axios.post(
+      `/api/v1/callcenter/bookings/update?booking_id=${currentID}`,
+      {
+        status: 'RECEIVED',
+      },
+      {
+        withCredentials: true,
+      },
+    );
+    console.log('updateBooking', res);
+    return res.data;
+  };
+  const handleCRUD = (events) => {
+    const { documentKey, operationType, fullDocument } = events[events.length - 1];
+    const rawId = documentKey._id.id;
+    let fullId = [];
+    for (let i = 0; i < rawId.length; i++) {
+      fullId.push(rawId[i]);
+    }
+    setCurrentID(generateMongoDBId(fullId));
+    switch (operationType) {
+      case 'insert':
+      //Find the event in the db and insert it to the list
+    }
+  };
   useEffect(() => {
     console.log(data);
     setDataList(data);
@@ -32,7 +57,29 @@ const AllRequests = ({ events }) => {
   useEffect(() => {
     console.log(events);
     if (events[events.length - 1] != null || events[events.length - 1] != undefined) {
-      setList((old) => [...old, events[events.length - 1]]);
+      const rawId = events?.[events.length - 1]?.documentKey._id.id;
+      console.log('🚀 events[events.length - 1]', events[events.length - 1]);
+      console.log('🚀 events[events.length - 1].fullDocument', events[events.length - 1]?.fullDocument);
+      console.log('🚀 ~ useEffect ~ rawId:', generateMongoDBId(rawId));
+      console.log('full list', list);
+      switch (events[events.length - 1]?.operationType) {
+        case 'insert':
+          setList((old) => [...old, events[events.length - 1]?.fullDocument]);
+          break;
+        case 'update': {
+          const updatedFields = events[events.length - 1]?.updateDescription?.updatedFields;
+          console.log('🚀 ~ useEffect ~ updatedFields:', updatedFields);
+          const updatedList = list.map((item) => {
+            if (item.bookingId == generateMongoDBId(rawId)) {
+              return { ...item, ...updatedFields };
+            }
+            return item;
+          });
+          setList(updatedList);
+          console.log('update', updatedList);
+          break;
+        }
+      }
     }
   }, [events]);
 

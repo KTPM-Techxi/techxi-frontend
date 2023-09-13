@@ -238,18 +238,8 @@ function Map() {
     return <SkeletonLoading />;
   }
   return (
-    <Flex
-      position="relative"
-      flexDirection="column"
-      alignItems="center"
-      h="100vh"
-      w="100vw">
-      <Box
-        position="absolute"
-        left={0}
-        top={0}
-        h="100%"
-        w="100%">
+    <Flex position="relative" flexDirection="column" alignItems="center" h="100vh" w="100vw">
+      <Box position="absolute" left={0} top={0} h="100%" w="100%">
         {/* Google Map Box */}
         <GoogleMap
           center={center}
@@ -268,100 +258,37 @@ function Map() {
         </GoogleMap>
       </Box>
       {/* Nút hiển thị bật tắt Modal */}
-      <ToggleBtn
-        isModalOpen={state.isModalOpen}
-        setState={setState}
-        className="absolute z-[50] left-[7px] -top-[15px] "
-        text={''}
-      />
+      <ToggleBtn isModalOpen={state.isModalOpen} setState={setState} className="absolute z-[50] left-[7px] -top-[15px] " text={''} />
 
-      <Flex
-        flexDirection="column"
-        p={4}
-        px={12}
-        borderRadius="lg"
-        m={4}
-        mt={0}
-        bgColor="white"
-        shadow="base"
-        minW={'60%'}
-        zIndex="1"
-        gap={4}
-        className="relative transition-all"
-        opacity={state.isModalOpen ? '1' : '0'}
-        visibility={state.isModalOpen ? 'visible' : 'hidden'}>
+      <Flex flexDirection="column" p={4} px={12} borderRadius="lg" m={4} mt={100} bgColor="white" shadow="base" minW={'60%'} zIndex="99" gap={4} className="relative transition-all" opacity={state.isModalOpen ? '1' : '0'} visibility={state.isModalOpen ? 'visible' : 'hidden'}>
         {/* Hiển thị Search Box Số 1 */}
-        <HStack
-          spacing={4}
-          justifyContent="space-between">
-          <OriginSearchBox
-            setState={setState}
-            handleOriginPlaceChanged={handleOriginPlaceChanged}
-            originRef={originRef}
-          />
+        <HStack spacing={4} justifyContent="space-between">
+          <OriginSearchBox setState={setState} handleOriginPlaceChanged={handleOriginPlaceChanged} originRef={originRef} />
         </HStack>
         {/* Hiển thị Search Box số 2  */}
-        <HStack
-          spacing={4}
-          mt={1}
-          justifyContent="space-between">
-          {state.isSearch && (
-            <DestinationSearchBox
-              handleDestinationPlaceChanged={handleDestinationPlaceChanged}
-              calculateRoute={calculateRoute}
-              clearRoute={clearRoute}
-              destiantionRef={destiantionRef}
-            />
-          )}
+        <HStack spacing={4} mt={1} justifyContent="space-between">
+          {state.isSearch && <DestinationSearchBox handleDestinationPlaceChanged={handleDestinationPlaceChanged} calculateRoute={calculateRoute} clearRoute={clearRoute} destiantionRef={destiantionRef} />}
         </HStack>
         {/* Hiển thị Distance, Duration và Loại Car Driving */}
         {/* Todo: Chọn Car Driving cho đúng */}
-        <FinalCalculation
-          map={map}
-          distance={distance}
-          duration={duration}
-          handleBackToMap={handleBackToMap}
-        />
+        <FinalCalculation map={map} distance={distance} duration={duration} handleBackToMap={handleBackToMap} />
         {/* Hiển thị giá tiền */}
-        {state.isShowCost && (
-          <Costs
-            map={map}
-            handleBackToMap={handleBackToMap}
-            distance={distance}
-            duration={duration}
-            handleFindDrivers={handleFindDrivers}
-          />
-        )}
+        {state.isShowCost && <Costs map={map} handleBackToMap={handleBackToMap} distance={distance} duration={duration} handleFindDrivers={handleFindDrivers} />}
 
         <div className="flex flex-col items-center gap-1 absolute top-7 left-[12px]">
-          <FaMapMarkerAlt
-            size={'20px'}
-            className="text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]"
-            onClick={() => handleFocus(originRef)}
-          />
+          <FaMapMarkerAlt size={'20px'} className="text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]" onClick={() => handleFocus(originRef)} />
 
           {/* 3 cái nút màu xanh dương */}
           {state.isSearch && <ThreeDots />}
 
           {/* Nút address màu đỏ để focus */}
-          {state.isSearch && (
-            <FaCircle
-              size={'15px'}
-              className="text-white border-black border-[1.5px] mt-[2px] rounded-full hover:text-[#00B14F] transition-all cursor-pointer"
-              onClick={() => handleFocus(destiantionRef)}
-            />
-          )}
+          {state.isSearch && <FaCircle size={'15px'} className="text-white border-black border-[1.5px] mt-[2px] rounded-full hover:text-[#00B14F] transition-all cursor-pointer" onClick={() => handleFocus(destiantionRef)} />}
         </div>
 
         {/* Nút Reverse màu đỏ */}
         {state.isSearch && (
-          <div
-            className="flex flex-col items-center gap-1 absolute top-16 right-[12px]"
-            onClick={handleReverseRoad}>
-            <FaExchangeAlt
-              size={'20px'}
-              className="rotate-90 text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]"
-            />
+          <div className="flex flex-col items-center gap-1 absolute top-16 right-[12px]" onClick={handleReverseRoad}>
+            <FaExchangeAlt size={'20px'} className="rotate-90 text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]" />
           </div>
         )}
       </Flex>

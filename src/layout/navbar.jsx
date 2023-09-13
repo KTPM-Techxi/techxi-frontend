@@ -11,7 +11,7 @@ function NavList({ handleLogout }) {
   const isUserLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
   return (
-    <ul className="justify-between my-1 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6 ">
+    <ul className="justify-between my-1 flex flex-row gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6 ">
       <div className="flex item-left col-span-3 lg:col-span-1">
         <img className="mr-2 mt-1 h-8 w-auto" src="https://companieslogo.com/img/orig/GRAB-e42c2148.png?t=1643541585" alt="Your Company" />
         <Link to={'/'} as="a" variant="h6" className="mr-4 cursor-pointer py-1.5 text-[#00B14F] font-bold text-lg">
@@ -83,10 +83,8 @@ export default function NavigationBar() {
   return (
     <div className="sticky top-0 z-50 py-3 bg-[#00B14F]">
       <Navbar className="mx-auto max-w-screen-xl px-3 py-2 rounded-full bg-white">
-        <div className="items-center justify-between text-blue-gray-900">
-          <div className="hidden lg:block">
-            <NavList handleLogout={handleLogout} />
-          </div>
+        <div className="items-center  justify-between  text-blue-gray-900">
+          <NavList handleLogout={handleLogout} />
         </div>
       </Navbar>
     </div>

@@ -8,7 +8,7 @@ import Layout from './layout/layout';
 import { HomePage } from './pages/HomePage';
 import StatPage from './pages/StatPage';
 import AllRequests from './pages/AllRequests/AllRequests';
-import TestPage from './pages/TestPage';
+import Driver from './pages/Driver';
 
 import axios from 'axios';
 import { UserList } from './pages/UserList';
@@ -16,6 +16,7 @@ import InputUserInforForm from './components/CallCenter/InputUserInforForm';
 import Map from './components/Map/Map';
 import { useEffect, useState } from 'react';
 import * as Realm from 'realm-web';
+import User from './pages/User';
 axios.defaults.baseURL = 'http://localhost:8080';
 
 const app = new Realm.App({ id: 'tech-wnnaa' });
@@ -53,10 +54,12 @@ function App() {
         <Route path="/userlist" element={<UserList />} />
         <Route path="/map" element={<Map />} />
         <Route path="/statistics" element={<StatPage />} />
+
+        <Route path="/driver" element={<Driver events={events} />} />
+        <Route path="/user" element={<User events={events} />} />
         {/* Handle Error page */}
         <Route path="*" element={<ErrorPage />} />
         {/* Test page to test component */}
-        <Route path="/test" element={<TestPage events={events} />} />
       </Routes>
     </Layout>
   );
