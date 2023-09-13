@@ -35,6 +35,7 @@ const User = ({ user,events }) => {
   const [isCentreModalOpen, setIsCentreModalOpen] = useState(false);
   const currentUser = useSelector((state) => state.auth.storedUser);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const openCentreModal = () => {
     setIsCentreModalOpen(true);
     setIsModalOpen(false);
@@ -259,10 +260,11 @@ const User = ({ user,events }) => {
     console.log('useEffect', UserFormInputInfor, 'and', currentUserInfor);
   }, [currentUserInfor, UserFormInputInfor]);
 
-  const [driverId, setDriverID] = useState('');
+  const [driverId, setDriverID] = useState('64d0d37586ad5d4d6d1f5912');
   const [status, setStatus] = useState('');
   const [selectedStar, setSelectedStar] = useState(null);
   const [driver, setDriver] = useState('');
+
   useEffect(() => {
     console.log('🚀 events:', events);
     console.log('user:', currentUser.user_id);
@@ -305,10 +307,12 @@ const User = ({ user,events }) => {
   const [review, setReview] = useState('');
   const rating = {
     rating: selectedStar,
-    review: review,
+    message: review,
     driver_id: driverId
-  }
+  };
+
   const sendRating = async (rating) => {
+    console.log(rating);
     const response = await axios.post('/api/v1/customer/bookings/rating', rating, {
       withCredentials: true,
     });
@@ -341,12 +345,12 @@ const User = ({ user,events }) => {
       </Box>
       {/* Nút hiển thị bật tắt Modal */}
       <button onClick={openModal} className="absolute z-[50] left-[5px] -top-[-60px] bg-white text-black border-2 rounded-xl font-semibold py-2 px-2">
-        {' '}
-        <FontAwesomeIcon icon={faBook} className="mx-1" /> Book A Ride{' '}
+        
+        <FontAwesomeIcon icon={faBook} className="mx-1" /> Book A Ride
       </button>
       <button onClick={openCentreModal} className="absolute z-[50] left-[5px] -top-[-110px]  bg-white text-black border-2 rounded-xl font-semibold px-2 py-2">
-        {' '}
-        <FontAwesomeIcon icon={faCar} className="mx-1" /> Nearby Driver{' '}
+        
+        <FontAwesomeIcon icon={faCar} className="mx-1" /> Nearby Driver
       </button>
       {isModalOpen && (
         <Flex flexDirection="column" p={4} px={12} borderRadius="lg" m={4} mt={20} bgColor="white" shadow="base" minW={'60%'} zIndex="99" gap={4} className="relative transition-all" opacity={state.isModalOpen ? '1' : '0'} visibility={state.isModalOpen ? 'visible' : 'hidden'}>
@@ -454,7 +458,7 @@ const User = ({ user,events }) => {
             {/* Button to close the second modal */}
             <div className="justify-between flex">
               <div></div>
-              <button onClick={sendRating} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
+              <button onClick= {()=> sendRating(rating)} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
                 Finish
               </button>
             </div>

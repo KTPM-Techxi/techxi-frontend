@@ -16,6 +16,7 @@ import {
 import { Line, Pie, Bar } from 'react-chartjs-2';
 import { faker } from '@faker-js/faker';
 import axios from 'axios';
+import RandomImage from '../components/randomImage';
 
 ChartJS.register(
   CategoryScale,
@@ -71,22 +72,16 @@ export const data = {
   datasets: [
     {
       label: 'Car',
-      data: labels.map(() => faker.datatype.number({ min: 400, max: 1000 })),
+      data: [13,10,30,12,50,10,20],
       borderColor: 'rgba(75, 250, 72, 0.5)', 
         backgroundColor: 'rgba(75, 250, 72,0.8)',
     },
     {
       label: 'Bike',
-      data: labels.map(() => faker.datatype.number({ min: 200, max: 1000 })),
+      data: [10,15,12,18,20,25,30],
       borderColor: 'rgba(75, 200, 72, 0.5)', 
         backgroundColor: 'rgba(75, 200, 72,0.8)',
-    },
-    {
-      label: 'Delivery',
-      data: labels.map(() => faker.datatype.number({ min: 100, max: 500 })),
-      borderColor: 'rgba(75, 150, 72, 0.5)', 
-        backgroundColor: 'rgba(75, 150, 72,0.8)',
-    },
+    }
   ],
 };
 
@@ -103,11 +98,11 @@ const pieOptions = {
 };
 
 export const pieData = {
-  labels: ['Car', 'Bike', 'Delivery'],
+  labels: ['Car', 'Bike'],
   datasets: [
     {
       label: '# of Votes',
-      data: [12, 19, 7],
+      data: [12, 19],
       backgroundColor: [
         'rgba(75, 250, 72, 0.8)',
         'rgba(75, 200, 72, 0.8)',
@@ -123,9 +118,25 @@ export const pieData = {
   ],
 };
 
+function StarRating({ numberOfStars }) {
+  const stars = [];
+
+  // Create an array of stars based on the numberOfStars prop
+  for (let i = 1; i <= numberOfStars; i++) {
+    stars.push(
+      <span key={i} className="text-yellow-500 text-3xl">
+        ★
+      </span>
+    );
+  }
+
+  return <div>{stars}</div>;
+}
+
 const StatPage = () => {
   const [reqList, setReqList] = useState([]);
   const [userList, setUserList] = useState([]);
+  const [ratingList, setRatingList] = useState([]);
   const getAllRequests = async () => {
     const res = await axios.get(`/api/v1/callcenter/bookings/filter`, {
       withCredentials: true,
@@ -136,8 +147,16 @@ const StatPage = () => {
     console.log('users from server', res_);
     setUserList(res_.data?.users);
   };
+  const getAllRating = async ()=>{
+    const res = await axios.get(`/api/v1/callcenter/rating/list`, {
+      withCredentials: true,
+    });
+    console.log('rating from server', res);
+    setRatingList(res?.data)
+  };
   useEffect(() => {
     getAllRequests();
+    getAllRating();
   }, []);
   return (
     <div className="w-4/5 mx-auto p-4 flex">
@@ -182,13 +201,25 @@ const StatPage = () => {
       <div className='w-1/3 mx-2 shadow-md'>
         <div className='w-full bg-slate-100 p-3'>
             <div className='justify-between flex'>
-                <div className='font-bold text-md'>
+                <div className='font-bold text-lg'>
                   Reviews and Ratings
                 </div>
                 <div className='text-sm text-green-500'>
                   See All
                 </div>
             </div>
+        </div>
+        <div>
+        {ratingList.map((rating) => (
+          <div className='flex p-2 border-2 mt-2' key={rating.id}>
+            <div className='w-1/5 mt-2 ml-3'><RandomImage /></div>
+            <div className='w-4/5'>
+              <div><StarRating numberOfStars={rating.rate} /></div>
+              <div className='font-semibold'>{rating.message}</div>
+            </div>
+          </div>
+        ))}
+          
         </div>
       </div>
     </div>
