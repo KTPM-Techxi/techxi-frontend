@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCab, faCar, faDriversLicense, faEye, faGear, faList, faMotorcycle, faPen, faStar, faTrash, faUserGroup } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useEffect } from 'react';
+import RandomImage from '../components/randomImage';
 export const UserList = () => {
     const [selectedOption, setSelectedOption] = useState('driver'); // Default selected option is 'customer'
     const [driverList, setDriverList] = useState([]);
@@ -11,11 +12,11 @@ export const UserList = () => {
   useEffect(() => {
     const getAllUsers = async () => {
       try {
-        const res = await axios.get(`/api/v1/callcenter/users/filter?roles=driver&current_page=1&page_size=20`, {
+        const res = await axios.get(`/api/v1/callcenter/users/filter?roles=driver&current_page=1&page_size=10`, {
         });
         console.log(res.data.users);
         setDriverList(res.data?.users);
-        const res_ = await axios.get(`/api/v1/callcenter/users/filter?roles=customer&current_page=1&page_size=20`, {
+        const res_ = await axios.get(`/api/v1/callcenter/users/filter?roles=customer&current_page=1&page_size=10`, {
         });
         console.log(res_.data.users);
         setCusList(res_.data?.users);
@@ -93,7 +94,45 @@ export const UserList = () => {
             <div className="relative max-h-[400px] overflow-y-auto overflow-x-auto shadow-md sm:rounded-lg w-4/5 mx-auto mt-5">
                 {selectedOption === 'customer' ? (
                     <table className="w-full text-sm text-left text-gray-500 ">
-
+                            <thead className="sticky top-0 z-10 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 ">
+                            <tr>
+                                <th scope="col-2" className="px-6 py-3 text-center">
+                                    Customer Name
+                                </th>
+                                <th scope="col" className="px-6 py-3 text-center">
+                                    Address
+                                </th>
+                                <th scope="col" className="px-6 py-3 text-center">
+                                    Email
+                                </th>
+                                <th scope="col" className="px-6 py-3 text-center">
+                                    DOB
+                                </th>
+                                <th scope="col" className="px-6 py-3">
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {driverList.map((customer) => (
+                                <tr key={customer.id} className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                                <th scope="row" className="flex px-6 py-2 justify-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <RandomImage />
+                                    <div className="px-2 py-2">{customer.name}</div>
+                                </th>
+                                <td className="px-6 py-4 text-center">{customer.address}</td>
+                                <td className="px-6 py-4 text-center">
+                                    {customer.email} 
+                                </td>
+                                <td className="px-6 py-4 text-center">
+                                    {customer.dob}
+                                </td>
+                                <td className="px-6 py-4 text-center">
+                                    <a className=""><FontAwesomeIcon icon={faPen} className="text-lg text-[#00B17F] mr-10" /></a>
+                                    <a className=""><FontAwesomeIcon icon={faTrash} className="text-lg text-red-500" /></a>
+                                </td>
+                                </tr>
+                            ))}
+                        </tbody>
                     </table>
                 ) : (
                     <table className="w-full text-sm text-left text-gray-500 ">
@@ -102,8 +141,8 @@ export const UserList = () => {
                                 <th scope="col" className="px-6 py-3 text-center">
                                     Driver Name
                                 </th>
-                                <th scope="col" className="px-6 py-3 text-center">
-                                    Phone number
+                                <th scope="col-2" className="px-6 py-3 text-center">
+                                    Email
                                 </th>
                                 <th scope="col" className="px-6 py-3 text-center">
                                     Vehicle
@@ -119,29 +158,26 @@ export const UserList = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                            {cusList.map((customer) => (
+                                <tr key={customer.id} className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
                                 <th scope="row" className="flex px-6 py-2 justify-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    <img className="w-10 h-10 rounded-full object-cover" src="https://flxt.tmsimg.com/assets/676946_v9_bb.jpg" alt="Jese image" />
-                                    <div className="px-2 py-2">Bett</div>
+                                    <RandomImage />
+                                    <div className="px-2 py-2">{customer.name}</div>
                                 </th>
+                                <td className="px-6 py-4 text-center">{customer.email}</td>
                                 <td className="px-6 py-4 text-center">
-                                    0909990099
+                                    <FontAwesomeIcon icon={faCar} className="text-[#00B12F]" /> 
                                 </td>
-                                <td className="px-6 py-4 text-center">
-                                    <FontAwesomeIcon icon={faCar} className="text-[#00B12F]" /> Car
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                    59SA123
-                                </td>
+                                <td className="px-6 py-4 text-center">{customer.dob}</td>
                                 <td className="px-6 py-4 text-center">
                                     <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
                                 </td>
                                 <td className="px-6 py-4 text-center">
                                     <a className=""><FontAwesomeIcon icon={faPen} className="text-lg text-[#00B17F] mr-10" /></a>
-                                    <a className=""><FontAwesomeIcon icon={faEye} className="text-lg text-[#00B17F] mr-10" /></a>
                                     <a className=""><FontAwesomeIcon icon={faTrash} className="text-lg text-red-500" /></a>
                                 </td>
-                            </tr>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 )}

@@ -217,6 +217,8 @@ const User = ({ user,events }) => {
         latitude: parsedAddress.originLat,
         longtitude: parsedAddress.originlng,
       },
+      pickup_address: originStore,
+      destination_address: destinationStore,
       destination: {
         latitude: parsedAddress.destinationLat,
         longtitude: parsedAddress.destinationlng,
@@ -235,6 +237,8 @@ const User = ({ user,events }) => {
       withCredentials: true,
     });
     console.log('🚀 ~ sendBookingRequest ~ response:', response);
+    setIsModalOpen(false);
+    setIsCentreModalOpen(true);
   };
   useEffect(() => {
     console.log('destinationStore changed', originStore);
@@ -258,7 +262,7 @@ const User = ({ user,events }) => {
   const [driverId, setDriverID] = useState('');
   const [status, setStatus] = useState('');
   const [selectedStar, setSelectedStar] = useState(null);
-
+  const [driver, setDriver] = useState('');
   const handleStarClick = (star) => {
     setSelectedStar(star);
   };
@@ -269,7 +273,34 @@ const User = ({ user,events }) => {
       setStatus(events.slice(-1)[0]?.fullDocument?.status);
       setDriverID(events.slice(-1)[0]?.fullDocument?.driver_id);
     }
+    
   }, [events, currentUser]);
+  
+
+  useEffect(() => {
+    const getDriver = async () => {
+      try {
+        const res = await axios.post(`/api/v1/callcenter/users/details`, {
+          "userId": driverId,
+          "role": "driver"
+        })
+        console.log(res?.data?.userInfo?.name);
+        setDriver(res?.data?.userInfo);
+        console.log(driver)
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    getDriver(); // Call the function when the component mounts
+
+    // Optionally, you can also set the selected option here or in another useEffect
+
+  }, [driverId]);
+
+
+  const [review, setReview] = useState('');
+
   if (!isLoaded) {
     return <SkeletonLoading />;
   }
@@ -366,7 +397,7 @@ const User = ({ user,events }) => {
             <div className="flex">
               <img className="w-10 h-10 rounded-full object-cover" src="https://flxt.tmsimg.com/assets/676946_v9_bb.jpg" alt="Jese image" />
               <div className="mt-2 flex mx-2">
-                <h2 className="text-md font-semibold mb-4">{driverId}</h2>
+                <h2 className="text-md font-semibold mb-4">{driver.name}</h2>
                 <h2 className="text-md ml-1">is 10km Away</h2>
               </div>
               <div className="searching-dots ">
@@ -409,7 +440,7 @@ const User = ({ user,events }) => {
             <div className="justify-between flex">
               <div></div>
               <button onClick={closeCentreModal} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
-                Close
+                Finish
               </button>
             </div>
           </div>

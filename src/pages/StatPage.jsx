@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import InputUserInforForm from '../components/CallCenter/InputUserInforForm';
 import React from 'react';
 import {
@@ -15,6 +15,7 @@ import {
 } from 'chart.js';
 import { Line, Pie, Bar } from 'react-chartjs-2';
 import { faker } from '@faker-js/faker';
+import axios from 'axios';
 
 ChartJS.register(
   CategoryScale,
@@ -123,6 +124,21 @@ export const pieData = {
 };
 
 const StatPage = () => {
+  const [reqList, setReqList] = useState([]);
+  const [userList, setUserList] = useState([]);
+  const getAllRequests = async () => {
+    const res = await axios.get(`/api/v1/callcenter/bookings/filter`, {
+      withCredentials: true,
+    });
+    console.log('request list from server', res);
+    setReqList(res.data?.bookings);
+    const res_ = await axios.get(`/api/v1/callcenter/users/filter?current_page=1&page_size=1000`);
+    console.log('users from server', res_);
+    setUserList(res_.data?.users);
+  };
+  useEffect(() => {
+    getAllRequests();
+  }, []);
   return (
     <div className="w-4/5 mx-auto p-4 flex">
       <div className="w-2/3 mx-2 shadow-md">
@@ -131,21 +147,21 @@ const StatPage = () => {
                 <img className="p-2 ml-2 aspect-square" src="https://cdn-icons-png.flaticon.com/512/8922/8922324.png" alt="revenue" />
                 <div className='my-auto ml-4'>
                     <div className='font-bold text-sm'>Total Revenue</div>
-                    <div className='text-green-600'>$12300000</div>
+                    <div className='text-green-600'>${reqList[0].totalPrice*reqList.length}</div>
                 </div>
             </div>
             <div className='w-1/3 h-16 bg-white flex rounded-xl shadow-md mx-3'>
                 <img className="p-2 ml-2 aspect-square" src="https://cdn-icons-png.flaticon.com/512/4088/4088042.png" alt="booking" />
                 <div className='my-auto ml-4'>
                     <div className='font-bold text-sm'>Total Rides</div>
-                    <div className='text-green-600'>365438</div>
+                    <div className='text-green-600'>{reqList.length}</div>
                 </div>
             </div>
             <div className='w-1/3 h-16 bg-white flex rounded-xl shadow-md'>
                 <img className="p-2 ml-2 aspect-square" src="https://cdn-icons-png.flaticon.com/512/2898/2898588.png" alt="driver" />
                 <div className='my-auto ml-4'>
                     <div className='font-bold text-sm'>Total Drivers</div>
-                    <div className='text-green-600'>1209</div>
+                    <div className='text-green-600'>{userList.length}</div>
                 </div>
             </div>
         </div>

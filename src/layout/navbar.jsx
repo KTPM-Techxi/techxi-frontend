@@ -6,10 +6,25 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutSuccess } from '../app/reducers/authSlice';
 import axios from 'axios';
-
+import { useEffect } from 'react';
 function NavList({ handleLogout }) {
   const isUserLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-
+  const currentUser = useSelector((state) => state.auth.storedUser);
+  const [role, setRole] = useState('');
+  useEffect(() => {
+    const getRole = async () => {
+      try {
+        const res = await axios.post(`/api/v1/callcenter/users/details`, {
+          "userId": currentUser.user_id
+        })
+        console.log(res);
+        setRole(res?.data?.userInfo?.role);
+        console.log(role)
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+    getRole();});
   return (
     <ul className="justify-between my-1 flex flex-row gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6 ">
       <div className="flex item-left col-span-3 lg:col-span-1">
