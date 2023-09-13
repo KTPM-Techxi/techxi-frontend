@@ -14,7 +14,7 @@ function handleBackToMap(map, center) {
   map.setZoom(18);
 }
 
-function ReusableMap({ long, lat }) {
+function ReusableMap({ lat, lng }) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries: ['places', 'geometry', 'geocoding', 'marker', 'geocoding'],
@@ -39,7 +39,7 @@ function ReusableMap({ long, lat }) {
       <Box position="absolute" left={0} top={0} h="100%" w="100%">
         {/* Google Map Box */}
         <GoogleMap
-          center={center}
+          center={{ lat, lng } || center}
           zoom={18}
           mapContainerStyle={{ width: '100%', height: '100%' }}
           options={{
@@ -49,8 +49,8 @@ function ReusableMap({ long, lat }) {
             fullscreenControl: true,
             gestureHandling: 'greedy',
           }}
-          onLoad={() => setMap({ long, lat })}>
-          <Marker position={center} />
+          onLoad={() => setMap({ lat, lng })}>
+          <Marker position={{ lat, lng } || center} />
           {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
         </GoogleMap>
       </Box>

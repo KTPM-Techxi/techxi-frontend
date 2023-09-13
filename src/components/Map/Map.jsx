@@ -28,7 +28,7 @@ function handleBackToMap(map, center) {
   map.setZoom(18);
 }
 
-function Map() {
+function Map({ role = {} }) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries: ['places', 'geometry', 'geocoding', 'marker', 'geocoding'],
@@ -196,13 +196,14 @@ function Map() {
         latitude: parsedAddress.originLat,
         longtitude: parsedAddress.originlng,
       },
+      pickup_address: originStore,
+      destination_address: destinationStore,
       destination: {
         latitude: parsedAddress.destinationLat,
         longtitude: parsedAddress.destinationlng,
       },
       time_completion: durationStore,
       scheduled_time: durationStore,
-
       total_distance: distanceStore,
       total_price: costStore,
     };
