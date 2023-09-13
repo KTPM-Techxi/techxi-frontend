@@ -263,9 +263,6 @@ const User = ({ user,events }) => {
   const [status, setStatus] = useState('');
   const [selectedStar, setSelectedStar] = useState(null);
   const [driver, setDriver] = useState('');
-  const handleStarClick = (star) => {
-    setSelectedStar(star);
-  };
   useEffect(() => {
     console.log('🚀 events:', events);
     console.log('user:', currentUser.user_id);
@@ -299,18 +296,24 @@ const User = ({ user,events }) => {
   }, [driverId]);
 
 
+  const handleStarClick = (star) => {
+    setSelectedStar(star);
+  };
+  const handleReviewChange = (event) => {
+    setReview(event.target.value);
+  };
   const [review, setReview] = useState('');
   const rating = {
     rating: selectedStar,
-    review: review
+    review: review,
+    driver_id: driverId
   }
   const sendRating = async (rating) => {
-    const response = await axios.post('/api/v1/customer/bookings/request', rating, {
+    const response = await axios.post('/api/v1/customer/bookings/rating', rating, {
       withCredentials: true,
     });
-    console.log('🚀 ~ sendBookingRequest ~ response:', response);
-    setIsModalOpen(false);
-    setIsCentreModalOpen(true);
+    console.log(response);
+    setIsCentreModalOpen(false);
   };
 
   if (!isLoaded) {
@@ -436,7 +439,7 @@ const User = ({ user,events }) => {
               <h2 className="text-md font-semibold mx-auto">Thanks for your support</h2>
             </div>
             <div className="w-4/5 p-4 mx-auto">
-              <input type="text" placeholder="Enter review here" className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-400" aria-rowspan={4} />
+              <input type="text" onChange={handleReviewChange} placeholder="Enter review here" className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-400" aria-rowspan={4} />
 
               {/* Five-Star Rating */}
               <div className="flex mt-4">
@@ -451,7 +454,7 @@ const User = ({ user,events }) => {
             {/* Button to close the second modal */}
             <div className="justify-between flex">
               <div></div>
-              <button onClick={closeCentreModal} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
+              <button onClick={sendRating} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
                 Finish
               </button>
             </div>
