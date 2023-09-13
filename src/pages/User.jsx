@@ -300,6 +300,18 @@ const User = ({ user,events }) => {
 
 
   const [review, setReview] = useState('');
+  const rating = {
+    rating: selectedStar,
+    review: review
+  }
+  const sendRating = async (rating) => {
+    const response = await axios.post('/api/v1/customer/bookings/request', rating, {
+      withCredentials: true,
+    });
+    console.log('🚀 ~ sendBookingRequest ~ response:', response);
+    setIsModalOpen(false);
+    setIsCentreModalOpen(true);
+  };
 
   if (!isLoaded) {
     return <SkeletonLoading />;

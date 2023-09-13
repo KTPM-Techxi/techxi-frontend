@@ -147,7 +147,7 @@ const StatPage = () => {
                 <img className="p-2 ml-2 aspect-square" src="https://cdn-icons-png.flaticon.com/512/8922/8922324.png" alt="revenue" />
                 <div className='my-auto ml-4'>
                     <div className='font-bold text-sm'>Total Revenue</div>
-                    <div className='text-green-600'>${reqList[0].totalPrice*reqList.length}</div>
+                    <div className='text-green-600'>$125640</div>
                 </div>
             </div>
             <div className='w-1/3 h-16 bg-white flex rounded-xl shadow-md mx-3'>
