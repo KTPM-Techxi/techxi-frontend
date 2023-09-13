@@ -12,11 +12,11 @@ export const UserList = () => {
   useEffect(() => {
     const getAllUsers = async () => {
       try {
-        const res = await axios.get(`/api/v1/callcenter/users/filter?roles=driver&current_page=1&page_size=10`, {
+        const res = await axios.get(`/api/v1/callcenter/users/filter?roles=driver&current_page=1&page_size=15`, {
         });
         console.log(res.data.users);
         setDriverList(res.data?.users);
-        const res_ = await axios.get(`/api/v1/callcenter/users/filter?roles=customer&current_page=1&page_size=10`, {
+        const res_ = await axios.get(`/api/v1/callcenter/users/filter?roles=customer&current_page=1&page_size=15`, {
         });
         console.log(res_.data.users);
         setCusList(res_.data?.users);
@@ -91,7 +91,7 @@ export const UserList = () => {
                 </div>
 
             </div>
-            <div className="relative max-h-[400px] overflow-y-auto overflow-x-auto shadow-md sm:rounded-lg w-4/5 mx-auto mt-5">
+            <div className="relative max-h-[800px] overflow-y-auto overflow-x-auto shadow-md sm:rounded-lg w-4/5 mx-auto mt-5">
                 {selectedOption === 'customer' ? (
                     <table className="w-full text-sm text-left text-gray-500 ">
                             <thead className="sticky top-0 z-10 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 ">
