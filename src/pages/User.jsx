@@ -208,9 +208,10 @@ const User = ({ user,events }) => {
     const { name, phoneNumber, timeToPick, vehicleType } = currentUserInfor;
     const data = {
       // agent_id: 'AnIDAgent',
+      // customer_id: currentUser.user_id,
       driver_vehicle_type: transportationModeStore,
-      customer_name: name,
-      customer_phone_number: phoneNumber,
+      // customer_name: name,
+      // customer_phone_number: phoneNumber,
       pickup_time: timeToPick,
       pickup_location: {
         latitude: parsedAddress.originLat,
@@ -230,7 +231,7 @@ const User = ({ user,events }) => {
     sendBookingRequest(data);
   }
   const sendBookingRequest = async (data) => {
-    const response = await axios.post('/api/v1/callcenter/bookings/create', data, {
+    const response = await axios.post('/api/v1/customer/bookings/request', data, {
       withCredentials: true,
     });
     console.log('🚀 ~ sendBookingRequest ~ response:', response);
@@ -254,16 +255,21 @@ const User = ({ user,events }) => {
     console.log('useEffect', UserFormInputInfor, 'and', currentUserInfor);
   }, [currentUserInfor, UserFormInputInfor]);
 
-
+  const [driverId, setDriverID] = useState('');
   const [status, setStatus] = useState('');
-   useEffect(() => {
+  const [selectedStar, setSelectedStar] = useState(null);
+
+  const handleStarClick = (star) => {
+    setSelectedStar(star);
+  };
+  useEffect(() => {
     console.log('🚀 events:', events);
-    console.log('user:',currentUser.user_id);
-    if (currentUser.user_id === events[0]?.fullDocument?.customer_id)
-    {
-      setStatus(events[0]?.fullDocument?.status);
+    console.log('user:', currentUser.user_id);
+    if (currentUser.user_id === events[0]?.fullDocument?.customer_id) {
+      setStatus(events.slice(-1)[0]?.fullDocument?.status);
+      setDriverID(events.slice(-1)[0]?.fullDocument?.driver_id);
     }
-  }, [events,currentUser]);
+  }, [events, currentUser]);
   if (!isLoaded) {
     return <SkeletonLoading />;
   }
@@ -288,46 +294,54 @@ const User = ({ user,events }) => {
         </GoogleMap>
       </Box>
       {/* Nút hiển thị bật tắt Modal */}
-      <button onClick={openModal} className="absolute z-[50] left-[5px] -top-[-60px] bg-white text-black border-2 rounded-xl font-semibold py-2 px-2" > <FontAwesomeIcon icon={faBook} className="mx-1"/> Book A Ride  </button>
-      <button onClick={openCentreModal} className="absolute z-[50] left-[5px] -top-[-110px]  bg-white text-black border-2 rounded-xl font-semibold px-2 py-2" > <FontAwesomeIcon icon={faCar} className="mx-1"/> Nearby Driver </button>
-      {isModalOpen && (<Flex flexDirection="column" p={4} px={12} borderRadius="lg" m={4} mt={20} bgColor="white" shadow="base" minW={'60%'} zIndex="99" gap={4} className="relative transition-all" opacity={state.isModalOpen ? '1' : '0'} visibility={state.isModalOpen ? 'visible' : 'hidden'}>
-        {/* Hiển thị Search Box Số 1 */}
-        <HStack spacing={4} justifyContent="space-between">
-          <OriginSearchBox setState={setState} handleOriginPlaceChanged={handleOriginPlaceChanged} originRef={originRef} />
-        </HStack>
-        {/* Hiển thị Search Box số 2  */}
-        <HStack spacing={4} mt={1} justifyContent="space-between">
-          {state.isSearch && <DestinationSearchBox handleDestinationPlaceChanged={handleDestinationPlaceChanged} calculateRoute={calculateRoute} clearRoute={clearRoute} destiantionRef={destiantionRef} />}
-        </HStack> 
-        {/* Hiển thị Distance, Duration và Loại Car Driving */}
-        {/* Todo: Chọn Car Driving cho đúng */}
-        <FinalCalculation map={map} distance={distance} duration={duration} handleBackToMap={handleBackToMap} />
-        {/* Hiển thị giá tiền */}
-        {state.isShowCost && <Costs map={map} handleBackToMap={handleBackToMap} distance={distance} duration={duration} handleFindDrivers={handleFindDrivers} />}
+      <button onClick={openModal} className="absolute z-[50] left-[5px] -top-[-60px] bg-white text-black border-2 rounded-xl font-semibold py-2 px-2">
+        {' '}
+        <FontAwesomeIcon icon={faBook} className="mx-1" /> Book A Ride{' '}
+      </button>
+      <button onClick={openCentreModal} className="absolute z-[50] left-[5px] -top-[-110px]  bg-white text-black border-2 rounded-xl font-semibold px-2 py-2">
+        {' '}
+        <FontAwesomeIcon icon={faCar} className="mx-1" /> Nearby Driver{' '}
+      </button>
+      {isModalOpen && (
+        <Flex flexDirection="column" p={4} px={12} borderRadius="lg" m={4} mt={20} bgColor="white" shadow="base" minW={'60%'} zIndex="99" gap={4} className="relative transition-all" opacity={state.isModalOpen ? '1' : '0'} visibility={state.isModalOpen ? 'visible' : 'hidden'}>
+          {/* Hiển thị Search Box Số 1 */}
+          <HStack spacing={4} justifyContent="space-between">
+            <OriginSearchBox setState={setState} handleOriginPlaceChanged={handleOriginPlaceChanged} originRef={originRef} />
+          </HStack>
+          {/* Hiển thị Search Box số 2  */}
+          <HStack spacing={4} mt={1} justifyContent="space-between">
+            {state.isSearch && <DestinationSearchBox handleDestinationPlaceChanged={handleDestinationPlaceChanged} calculateRoute={calculateRoute} clearRoute={clearRoute} destiantionRef={destiantionRef} />}
+          </HStack>
+          {/* Hiển thị Distance, Duration và Loại Car Driving */}
+          {/* Todo: Chọn Car Driving cho đúng */}
+          <FinalCalculation map={map} distance={distance} duration={duration} handleBackToMap={handleBackToMap} />
+          {/* Hiển thị giá tiền */}
+          {state.isShowCost && <Costs map={map} handleBackToMap={handleBackToMap} distance={distance} duration={duration} handleFindDrivers={handleFindDrivers} />}
 
-        <div className="flex flex-col items-center gap-1 absolute top-7 left-[12px]">
-          <FaMapMarkerAlt size={'20px'} className="text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]" onClick={() => handleFocus(originRef)} />
+          <div className="flex flex-col items-center gap-1 absolute top-7 left-[12px]">
+            <FaMapMarkerAlt size={'20px'} className="text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]" onClick={() => handleFocus(originRef)} />
 
-          {/* 3 cái nút màu xanh dương */}
-          {state.isSearch && <ThreeDots />}
+            {/* 3 cái nút màu xanh dương */}
+            {state.isSearch && <ThreeDots />}
 
-          {/* Nút address màu đỏ để focus */}
-          {state.isSearch && <FaCircle size={'15px'} className="text-white border-black border-[1.5px] mt-[2px] rounded-full hover:text-[#00B14F] transition-all cursor-pointer" onClick={() => handleFocus(destiantionRef)} />}
-        </div>
-
-        {/* Nút Reverse màu đỏ */}
-        {state.isSearch && (
-          <div className="flex flex-col items-center gap-1 absolute top-16 right-[12px]" onClick={handleReverseRoad}>
-            <FaExchangeAlt size={'20px'} className="rotate-90 text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]" />
+            {/* Nút address màu đỏ để focus */}
+            {state.isSearch && <FaCircle size={'15px'} className="text-white border-black border-[1.5px] mt-[2px] rounded-full hover:text-[#00B14F] transition-all cursor-pointer" onClick={() => handleFocus(destiantionRef)} />}
           </div>
-        )}
-      </Flex>)}
+
+          {/* Nút Reverse màu đỏ */}
+          {state.isSearch && (
+            <div className="flex flex-col items-center gap-1 absolute top-16 right-[12px]" onClick={handleReverseRoad}>
+              <FaExchangeAlt size={'20px'} className="rotate-90 text-rose-500 hover:text-[#00B14F] transition-all cursor-pointer -translate-y-[1.5px]" />
+            </div>
+          )}
+        </Flex>
+      )}
       {/* Second Modal */}
-      {isCentreModalOpen && (
+      {isCentreModalOpen && status === 'PENDING' && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white w-1/2 p-4 rounded-lg shadow-lg">
             {/* Content of the second modal */}
-            <div className='flex'>
+            <div className="flex">
               <h2 className="text-md font-semibold mb-4">We are looking for a nearby driver</h2>
               <div className="searching-dots mb-2">
                 <span className="dot"></span>
@@ -335,15 +349,72 @@ const User = ({ user,events }) => {
                 <span className="dot"></span>
               </div>
             </div>
-            
             {/* Button to close the second modal */}
-            <button onClick={closeCentreModal} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
-              Close
-            </button>
+            <div className="justify-between flex">
+              <div></div>
+              <button onClick={closeCentreModal} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
-      
+      {isCentreModalOpen && status === 'RECEIVED' && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white w-1/2 p-4 rounded-lg shadow-lg">
+            {/* Content of the second modal */}
+            <div className="flex">
+              <img className="w-10 h-10 rounded-full object-cover" src="https://flxt.tmsimg.com/assets/676946_v9_bb.jpg" alt="Jese image" />
+              <div className="mt-2 flex mx-2">
+                <h2 className="text-md font-semibold mb-4">{driverId}</h2>
+                <h2 className="text-md ml-1">is 10km Away</h2>
+              </div>
+              <div className="searching-dots ">
+                <span className="dot"></span>
+                <span className="dot"></span>
+                <span className="dot"></span>
+              </div>
+            </div>
+            {/* Button to close the second modal */}
+            <div className="justify-between flex">
+              <div></div>
+              <button onClick={closeCentreModal} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {isCentreModalOpen && status === 'COMPLETED' && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white w-1/2 p-4 rounded-lg shadow-lg">
+            {/* Content of the second modal */}
+            <div className="flex mx-auto">
+              <h2 className="text-md font-semibold mx-auto">Thanks for your support</h2>
+            </div>
+            <div className="w-4/5 p-4 mx-auto">
+              <input type="text" placeholder="Enter review here" className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-400" aria-rowspan={4} />
+
+              {/* Five-Star Rating */}
+              <div className="flex mt-4">
+                <span className="text-md">Rating:</span>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span key={star} className={`text-3xl ml-2 cursor-pointer ${star <= selectedStar ? 'text-yellow-500' : 'text-gray-300'}`} onClick={() => handleStarClick(star)}>
+                    ★
+                  </span>
+                ))}
+              </div>
+            </div>
+            {/* Button to close the second modal */}
+            <div className="justify-between flex">
+              <div></div>
+              <button onClick={closeCentreModal} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Flex>
   );
 }

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Select } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { DatePicker, Space } from 'antd';
+import { DatePicker, Input, Space } from 'antd';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../app/reducers/authSlice';
@@ -21,6 +21,7 @@ const RegisterPage = () => {
     formState: { errors },
   } = useForm();
   const [date, setDate] = useState(null);
+  const [role, setRole] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const handleChange = (value) => {
@@ -111,7 +112,9 @@ const RegisterPage = () => {
                       }}
                       {...register('role', { required: true })}>
                       <option value="customer">Customer</option>
-                      <option value="driver">Driver</option>
+                      <option value="driver" onSelect>
+                        Driver
+                      </option>
                     </Select>
                   </div>
                 </div>
@@ -137,6 +140,38 @@ const RegisterPage = () => {
                   </div>
                 </div>
               </div>
+              {role == 'driver' && (
+                <div className="role_dob flex items-center w-full">
+                  <div className="w-[50%]">
+                    <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
+                      Your vehicle type
+                    </label>
+                    <div className="mt-2">
+                      <Select
+                        placeholder="Select vehicle"
+                        size="md"
+                        style={{
+                          width: '100%',
+                          padding: '0.25rem 0.5rem',
+                          outline: 'none',
+                          fontSize: '.90rem',
+                        }}
+                        {...register('vehicleType', { required: false })}>
+                        <option value="CAR">CAR</option>
+                        <option value="MOTORCYCLE">MOTORCYCLE</option>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="w-[50%]">
+                    <label htmlFor="dob" className="block text-sm font-medium leading-6 text-gray-900">
+                      Your Vehicle Number
+                    </label>
+                    <div className="mt-2">
+                      <input id="vehicleNumber" type="vehicleNumber" autoComplete="vehicleNumber" {...register('vehicleNumber', { required: false })} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-inset focus:ring-[#00B14F] sm:text-sm sm:leading-6 p-2" />
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-2">
                 {errors.role && <span className="text-red-500 text-sm ">Role must be selected</span>}
                 {errors.dob && <span className="text-red-500 text-sm ">Must select DOB</span>}
